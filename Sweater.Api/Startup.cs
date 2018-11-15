@@ -19,13 +19,15 @@ namespace Sweater.Api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// Configure services for the IoC container.
+        /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register IoC container
-            services.AddSingleton<IIndexerQueryService, IndexerQueryService>();
+            services.AddTransient<IIndexerQueryService, IndexerQueryService>();
             services.AddSingleton<Func<IWebClient>>(() => new WebClientWrapper());
         }
 
