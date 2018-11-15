@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sweater.Core.Clients;
+using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
@@ -10,14 +11,19 @@ namespace Sweater.Core.Services
 {
     public class IndexerQueryService : IIndexerQueryService
     {
-        private IList<IIndexer> _indexers = new List<IIndexer>();
+        private IList<BaseIndexer> _indexers = new List<BaseIndexer>();
 
+        private readonly Func<IWebClient> _createWebClient;
+
+        /// <summary>
+        /// Create a new IndexerQueryService instance.
+        /// </summary>
+        /// <param name="createWebClient">A IWebClient factory method (used for mocking).</param>
         public IndexerQueryService(
             Func<IWebClient> createWebClient
         )
         {
-            var webClient = createWebClient();
-
+            _createWebClient = createWebClient;
         }
 
         public Task LoadIndexers()
