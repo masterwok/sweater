@@ -33,6 +33,10 @@
           <e p="Contracts" t="Include">
             <e p="IIndexer.cs" t="Include" />
           </e>
+          <e p="Private" t="Include" />
+          <e p="Public" t="Include">
+            <e p="ThePirateBayIndexer.cs" t="Include" />
+          </e>
         </e>
         <e p="Models" t="Include">
           <e p="IndexerResult.cs" t="Include" />
