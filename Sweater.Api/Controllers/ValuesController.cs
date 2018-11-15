@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Api.Controllers
 {
@@ -10,6 +8,12 @@ namespace Sweater.Api.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        public ValuesController(
+            IIndexerQueryService queryService
+        )
+        {
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
