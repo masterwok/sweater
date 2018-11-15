@@ -2,9 +2,9 @@ using System;
 
 namespace Sweater.Core.Models
 {
-    /**
-     * This model represents a single torrent entry.
-     */
+    /// <summary>
+    /// This model represents a single torrent entry.
+    /// </summary>
     public sealed class Torrent
     {
         public string Name { get; set; }

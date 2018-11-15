@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Sweater.Core.Clients
 {
-    /**
-     * An interface for WebClient for mocking during unit tests.
-     */
+    /// <summary>
+    /// An interface for WebClient for mocking during unit tests.
+    /// </summary>
     public interface IWebClient
     {
         object GetLifetimeService();
@@ -105,7 +105,10 @@ namespace Sweater.Core.Clients
         byte[] UploadValues(Uri address, string method, NameValueCollection data);
         void UploadValuesAsync(Uri address, NameValueCollection data);
         void UploadValuesAsync(Uri address, string method, NameValueCollection data);
-        void UploadValuesAsync(Uri address, string method, NameValueCollection data, object userToken);
+
+        void UploadValuesAsync(Uri address, string method, NameValueCollection data,
+            object userToken);
+
         Task<byte[]> UploadValuesTaskAsync(string address, NameValueCollection data);
         Task<byte[]> UploadValuesTaskAsync(string address, string method, NameValueCollection data);
         Task<byte[]> UploadValuesTaskAsync(Uri address, NameValueCollection data);
