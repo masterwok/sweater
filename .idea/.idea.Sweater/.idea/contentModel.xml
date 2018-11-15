@@ -29,7 +29,14 @@
         <e p="wwwroot" t="Include" />
       </e>
       <e p="Sweater.Core" t="IncludeRecursive">
+        <e p="Clients" t="Include">
+          <e p="Contracts" t="Include">
+            <e p="IWebClientWrapper.cs" t="Include" />
+          </e>
+          <e p="WebClientWrapper.cs" t="Include" />
+        </e>
         <e p="Indexers" t="Include">
+          <e p="BaseIndexer.cs" t="Include" />
           <e p="Contracts" t="Include">
             <e p="IIndexer.cs" t="Include" />
           </e>
