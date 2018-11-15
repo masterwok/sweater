@@ -8,12 +8,6 @@ namespace Sweater.Api.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        public ValuesController(
-            IIndexerQueryService queryService
-        )
-        {
-        }
-
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
