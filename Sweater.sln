@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sweater.Api", "Sweater.Api\Sweater.Api.csproj", "{D8C99563-7471-4E15-9D5B-5042B7D85015}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sweater.Core", "Sweater.Core\Sweater.Core.csproj", "{5E2E976D-0836-402C-89DB-53D3B70D3CF9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8C99563-7471-4E15-9D5B-5042B7D85015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C99563-7471-4E15-9D5B-5042B7D85015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C99563-7471-4E15-9D5B-5042B7D85015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C99563-7471-4E15-9D5B-5042B7D85015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
