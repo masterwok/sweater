@@ -1,3 +1,5 @@
 .idea/
-Sweater.*/obj/
-Sweater.*/bin/
+Sweater.Core/obj/
+Sweater.Core/bin/
+Sweater.Api/obj/
+Sweater.Api/bin/
