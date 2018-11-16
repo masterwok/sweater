@@ -38,19 +38,20 @@ namespace Sweater.Api
 
             // Services
             services.AddTransient<IIndexerQueryService, IndexerQueryService>();
-
-            // Query service configuration
             services.AddSingleton(_queryConfig);
 
+            // Clients
+            services.AddTransient<IWebClient, WebClientWrapper>();
+
             // Indexers
+            services.AddTransient<ThePirateBayIndexer>();
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => key =>
             {
                 var config = _indexerConfigSection.GetSection(key.ToString());
-                var webClient = new WebClientWrapper();
 
                 switch (key)
                 {
-                    case Indexer.ThePirateBay: return new ThePirateBayIndexer(webClient, config);
+                    case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>().Configure(config);
                     default: throw new KeyNotFoundException();
                 }
             });
