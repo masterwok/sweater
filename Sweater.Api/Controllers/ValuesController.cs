@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Api.Controllers
 {
