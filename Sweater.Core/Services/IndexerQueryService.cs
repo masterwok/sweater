@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public;
@@ -16,26 +17,35 @@ namespace Sweater.Core.Services
     /// </summary>
     public class IndexerQueryService : IIndexerQueryService
     {
-        private static readonly Dictionary<string, Func<IWebClient, IIndexer>> IndexerFactory =
-            new Dictionary<string, Func<IWebClient, IIndexer>>
+        // TODO: Is there a better way to register these?
+        private static readonly Dictionary<string, Func<IWebClient, Func<string, IConfigurationSection>, IIndexer>> IndexerFactory
+            = new Dictionary<string, Func<IWebClient, Func<string, IConfigurationSection>, IIndexer>>
             {
-                {ThePirateBayIndexer.Tag, webClient => new ThePirateBayIndexer(webClient)}
+                {
+                    ThePirateBayIndexer.Tag, (webClient, configSection) => new ThePirateBayIndexer(webClient, configSection)
+                }
             };
 
+        private readonly Func<string, IConfigurationSection> _readConfigSection;
         private readonly Func<IWebClient> _createWebClient;
         private readonly QueryConfig _queryConfig;
 
         /// <summary>
         /// Create a new IndexerQueryService instance.
         /// </summary>
+        /// <param name="readConfigSection">
+        /// Func used to read indexer configuration by section name.
+        /// </param>
         /// <param name="createWebClient">A IWebClient factory method (used for mocking).</param>
         /// <param name="queryConfig">Query service configuration.</param>
         public IndexerQueryService(
-            Func<IWebClient> createWebClient
+            Func<string, IConfigurationSection> readConfigSection
+            , Func<IWebClient> createWebClient
             , QueryConfig queryConfig
         )
         {
             _createWebClient = createWebClient;
+            _readConfigSection = readConfigSection;
             _queryConfig = queryConfig;
         }
 
@@ -44,6 +54,8 @@ namespace Sweater.Core.Services
 
         public async Task<IEnumerable<IndexerResult>> Query(Query query)
         {
+            var indexer = GetIndexerByTagOrThrow(query.IndexerTag);
+
             // TODO: Actually query..
             return new List<IndexerResult>
             {
@@ -75,7 +87,7 @@ namespace Sweater.Core.Services
 
 
         private IIndexer GetIndexerByTagOrThrow(string tag) => IndexerFactory.ContainsKey(tag)
-            ? IndexerFactory[tag](_createWebClient.Invoke())
+            ? IndexerFactory[tag](_createWebClient.Invoke(), _readConfigSection)
             : throw new KeyNotFoundException($"Torrent indexer tag not registered: {tag}");
     }
 }

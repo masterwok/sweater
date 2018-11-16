@@ -26,6 +26,7 @@ namespace Sweater.Api
                 .SetBasePath(currentDir)
                 .AddJsonFile("certificate.json", true, true)
                 .AddJsonFile($"certificate.{environment}.json", true, true)
+                .AddJsonFile("indexers.json", true, true)
                 .AddEnvironmentVariables()
                 .Build();
 

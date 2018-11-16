@@ -1,0 +1,7 @@
+{
+  "indexers": {
+    "thepiratebay": {
+      "foo": "bar"
+    }
+  }
+}
