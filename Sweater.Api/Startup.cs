@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Sweater.Core.Clients;
 using Sweater.Core.Constants;
+using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public;
 using Sweater.Core.Models;
@@ -29,6 +30,15 @@ namespace Sweater.Api
             _indexerConfigSection = configuration.GetSection("indexers");
         }
 
+        private static BaseIndexer GetIndexerInstance(IServiceProvider serviceProvider, Indexer indexer)
+        {
+            switch (indexer)
+            {
+                case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>();
+                default: throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
+            }
+        }
+
         /// <summary>
         /// Configure services for the IoC container.
         /// </summary>
@@ -45,16 +55,10 @@ namespace Sweater.Api
 
             // Indexers
             services.AddTransient<ThePirateBayIndexer>();
-            services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => key =>
-            {
-                var config = _indexerConfigSection.GetSection(key.ToString());
-
-                switch (key)
-                {
-                    case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>().Configure(config);
-                    default: throw new KeyNotFoundException($"Indexer is not registered: {key}");
-                }
-            });
+            services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>
+                GetIndexerInstance(serviceProvider, indexer)
+                    .Configure(_indexerConfigSection.GetSection(indexer.ToString()))
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
