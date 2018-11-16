@@ -12,17 +12,17 @@ namespace Sweater.Core.Indexers.Public
         private readonly Settings _settings;
 
         // ReSharper disable once ClassNeverInstantiated.Local
-        public sealed class Settings
+        private sealed class Settings
         {
             public string Foo { get; set; }
         }
 
         public ThePirateBayIndexer(
             IWebClient webClient
-            , Settings settings
+            , IConfiguration configuration
         ) : base(webClient)
         {
-            _settings = settings;
+            _settings = configuration.Get<Settings>();
         }
 
         public override Task<bool> Login()

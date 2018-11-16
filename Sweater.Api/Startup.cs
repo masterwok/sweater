@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -35,25 +36,22 @@ namespace Sweater.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Register IoC container
+            // Services
             services.AddTransient<IIndexerQueryService, IndexerQueryService>();
 
             // Query service configuration
             services.AddSingleton(_queryConfig);
 
-            // This function allows indexers to read their configurations
-            services.AddSingleton<Func<string, IConfigurationSection>>(
-                section => _indexerConfigSection.GetSection(section)
-            );
-
+            // Indexers
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => key =>
             {
+                var config = _indexerConfigSection.GetSection(key.ToString());
+                var webClient = new WebClientWrapper();
+
                 switch (key)
                 {
-                    case Indexer.ThePirateBay:
-                        return new ThePirateBayIndexer(new WebClientWrapper(), _indexerConfigSection.GetSection(Indexer.ThePirateBay.ToString()).Get<ThePirateBayIndexer.Settings>());
-                    default:
-                        throw new KeyNotFoundException();
+                    case Indexer.ThePirateBay: return new ThePirateBayIndexer(webClient, config);
+                    default: throw new KeyNotFoundException();
                 }
             });
         }
