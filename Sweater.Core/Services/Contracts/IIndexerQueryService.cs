@@ -6,8 +6,8 @@ namespace Sweater.Core.Services.Contracts
 {
     public interface IIndexerQueryService
     {
-        Task LoadIndexers();
+        Task<IEnumerable<string>> GetIndexerTags();
 
-        Task<IEnumerable<IndexerResult>> Query(string queryString);
+        Task<IEnumerable<IndexerResult>> Query(Query query);
     }
 }

@@ -7,6 +7,8 @@ namespace Sweater.Core.Indexers.Public
 {
     public class ThePirateBayIndexer : BaseIndexer
     {
+        public static readonly string Tag = "indexer.thepiratebay";
+
         public ThePirateBayIndexer(
             IWebClient webClient
         ) : base(webClient) => Expression.Empty();
