@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sweater.Core.Clients;
-using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public;
 using Sweater.Core.Models;
@@ -23,17 +22,21 @@ namespace Sweater.Core.Services
                 {ThePirateBayIndexer.Tag, webClient => new ThePirateBayIndexer(webClient)}
             };
 
-        private IList<IIndexer> _indexers = new List<IIndexer>();
-
         private readonly Func<IWebClient> _createWebClient;
+        private readonly QueryConfig _queryConfig;
 
         /// <summary>
         /// Create a new IndexerQueryService instance.
         /// </summary>
         /// <param name="createWebClient">A IWebClient factory method (used for mocking).</param>
-        public IndexerQueryService(Func<IWebClient> createWebClient)
+        /// <param name="queryConfig">Query service configuration.</param>
+        public IndexerQueryService(
+            Func<IWebClient> createWebClient
+            , QueryConfig queryConfig
+        )
         {
             _createWebClient = createWebClient;
+            _queryConfig = queryConfig;
         }
 
         public Task<IEnumerable<string>> GetIndexerTags() => Task

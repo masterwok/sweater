@@ -12,7 +12,9 @@ namespace Sweater.Api.Controllers
     {
         private readonly IIndexerQueryService _queryService;
 
-        public IndexerController(IIndexerQueryService queryService)
+        public IndexerController(
+            IIndexerQueryService queryService
+        )
         {
             _queryService = queryService;
         }
