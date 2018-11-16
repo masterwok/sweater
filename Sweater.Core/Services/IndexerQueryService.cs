@@ -35,7 +35,7 @@ namespace Sweater.Core.Services
 
         public async Task<IEnumerable<IndexerResult>> Query(Query query)
         {
-            var indexer = _getIndexer(Indexer.ThePirateBay);
+            var indexer = _getIndexer(query.Indexer);
 
             // TODO: Actually query..
             return new List<IndexerResult>

@@ -1,3 +1,5 @@
+using Sweater.Core.Constants;
+
 namespace Sweater.Core.Models
 {
     /// <summary>
@@ -6,10 +8,10 @@ namespace Sweater.Core.Models
     /// </summary>
     public class Query
     {
-        public string IndexerTag { get; set; }
+        public Indexer Indexer { get; set; }
         public string QueryString { get; set; }
 
-        public override string ToString() => $"Indexer Tag = {IndexerTag}, " +
+        public override string ToString() => $"Indexer Tag = {Indexer}, " +
                                              $"Query String = {QueryString}";
     }
 }

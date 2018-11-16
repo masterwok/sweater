@@ -52,7 +52,7 @@ namespace Sweater.Api
                 switch (key)
                 {
                     case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>().Configure(config);
-                    default: throw new KeyNotFoundException();
+                    default: throw new KeyNotFoundException($"Indexer is not registered: {key}");
                 }
             });
         }
