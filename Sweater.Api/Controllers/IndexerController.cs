@@ -14,7 +14,6 @@ namespace Sweater.Api.Controllers
             _queryService = queryService;
         }
 
-
         public ActionResult<string> Query(
             string queryString
             , string indexer = "all"

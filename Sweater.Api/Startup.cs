@@ -27,8 +27,8 @@ namespace Sweater.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register IoC container
-            services.AddTransient<IIndexerQueryService, IndexerQueryService>();
             services.AddSingleton<Func<IWebClient>>(() => new WebClientWrapper());
+            services.AddTransient<IIndexerQueryService, IndexerQueryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
