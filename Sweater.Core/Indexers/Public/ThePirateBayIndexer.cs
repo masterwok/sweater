@@ -9,19 +9,20 @@ namespace Sweater.Core.Indexers.Public
 {
     public class ThePirateBayIndexer : BaseIndexer
     {
-        public static readonly string Tag = "thepiratebay";
+        private readonly Settings _settings;
 
         // ReSharper disable once ClassNeverInstantiated.Local
-        private sealed class Settings
+        public sealed class Settings
         {
             public string Foo { get; set; }
         }
 
-        public ThePirateBayIndexer(IWebClient webClient,
-            Func<string, IConfigurationSection> readConfigSection
+        public ThePirateBayIndexer(
+            IWebClient webClient
+            , Settings settings
         ) : base(webClient)
         {
-            var settings = readConfigSection(Tag).Get<Settings>();
+            _settings = settings;
         }
 
         public override Task<bool> Login()

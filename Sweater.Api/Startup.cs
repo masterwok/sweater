@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Sweater.Core.Clients;
+using Sweater.Core.Constants;
+using Sweater.Core.Indexers.Contracts;
+using Sweater.Core.Indexers.Public;
 using Sweater.Core.Models;
 using Sweater.Core.Services;
 using Sweater.Core.Services.Contracts;
@@ -32,7 +36,6 @@ namespace Sweater.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register IoC container
-            services.AddSingleton<Func<IWebClient>>(() => new WebClientWrapper());
             services.AddTransient<IIndexerQueryService, IndexerQueryService>();
 
             // Query service configuration
@@ -42,6 +45,17 @@ namespace Sweater.Api
             services.AddSingleton<Func<string, IConfigurationSection>>(
                 section => _indexerConfigSection.GetSection(section)
             );
+
+            services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => key =>
+            {
+                switch (key)
+                {
+                    case Indexer.ThePirateBay:
+                        return new ThePirateBayIndexer(new WebClientWrapper(), _indexerConfigSection.GetSection(Indexer.ThePirateBay.ToString()).Get<ThePirateBayIndexer.Settings>());
+                    default:
+                        throw new KeyNotFoundException();
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
