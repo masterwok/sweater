@@ -49,10 +49,13 @@ namespace Sweater.Api
                 .AddMvc(options =>
                 {
                     // Controller filter attributes
-                    options.Filters.Add<CatchAllExceptionFilterAttribute>();
+                    options.Filters.Add<CatchAllExceptionFilter>();
                     options.Filters.Add<ValidModelStateFilterAttribute>();
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Filters
+            services.AddScoped<CatchAllExceptionFilter>();
 
             // Services
             services.AddTransient<IIndexerQueryService, IndexerQueryService>();
