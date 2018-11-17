@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,6 @@ namespace Sweater.Api.Controllers
     public class IndexerController : ControllerBase
     {
         private readonly IIndexerQueryService _queryService;
-
 
         public IndexerController(IIndexerQueryService queryService)
             => _queryService = queryService;

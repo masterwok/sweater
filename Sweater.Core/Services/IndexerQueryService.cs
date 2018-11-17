@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Sweater.Core.Clients;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers.Contracts;
-using Sweater.Core.Indexers.Public;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 
@@ -33,17 +30,23 @@ namespace Sweater.Core.Services
         public Task<IEnumerable<string>> GetIndexerTags() =>
             Task.FromResult(Enum.GetNames(typeof(Indexer)).AsEnumerable());
 
+        private IEnumerable<IIndexer> GetIndexersForQuery(Indexer indexer)
+            => indexer == Indexer.All
+                // Get all indexer instances
+                ? Enum.GetValues(typeof(Indexer))
+                    .Cast<Indexer>()
+                    .Where(i => i != Indexer.All)
+                    .Select(_getIndexer)
+                // Get single indexer instance
+                : new[] {_getIndexer(indexer)};
+
         public async Task<IEnumerable<IndexerResult>> Query(Query query)
         {
-            var indexer = _getIndexer(query.Indexer);
+            var indexers = GetIndexersForQuery(query.Indexer);
+
 
             // TODO: Actually query..
             return new List<IndexerResult>();
         }
-
-        public async Task<IndexerResult> QueryByIndexer(
-            string tag
-            , string queryString
-        ) => throw new NotImplementedException();
     }
 }

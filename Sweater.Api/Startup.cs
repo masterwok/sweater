@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,8 @@ namespace Sweater.Api
             switch (indexer)
             {
                 case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>();
+                case Indexer.LeetX: return serviceProvider.GetService<LeetX>();
+                case Indexer.All: throw new InvalidEnumArgumentException("All indexer has no class to instantiate.");
                 default: throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
             }
         }
@@ -66,6 +69,9 @@ namespace Sweater.Api
 
             // Indexers
             services.AddTransient<ThePirateBayIndexer>();
+            services.AddTransient<LeetX>();
+
+            // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>
                 GetIndexerInstance(serviceProvider, indexer)
                     .Configure(_indexerConfigSection.GetSection(indexer.ToString()))
