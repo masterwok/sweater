@@ -34,10 +34,6 @@ namespace Sweater.Api.Controllers
         [Route("[action]")]
         public async Task<IEnumerable<IndexerResult>> Query(
             [FromBody] Query query
-        )
-        {
-            throw new Exception("asdf");
-            return await _queryService.Query(query);
-        }
+        ) => await _queryService.Query(query);
     }
 }
