@@ -47,20 +47,18 @@ namespace Sweater.Core.Indexers
         /// invoked in the query workflow.
         /// </summary>
         /// <returns>Whether or not the authentication succeeded.</returns>
-        public abstract Task<bool> Login();
+        public abstract Task Login();
 
         /// <summary>
         /// Query the indexer for torrents.
         /// </summary>
         /// <param name="query">The query provided from the client.</param>
-        /// <returns>An IndexerResult containing the indexer and torrent results.</returns>
         public abstract Task<IndexerResult> Query(Query query);
 
         /// <summary>
         /// End authenticated session with the indexer. This method is invoked last in the query
         /// workflow.
         /// </summary>
-        /// <returns>Whether or not logging out of the indexer succeeded.</returns>
-        public abstract Task<bool> Logout();
+        public abstract Task Logout();
     }
 }

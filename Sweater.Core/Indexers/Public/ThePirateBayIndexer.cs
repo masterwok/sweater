@@ -28,10 +28,19 @@ namespace Sweater.Core.Indexers.Public
             return this;
         }
 
-        public override Task<bool> Login() => throw new NotImplementedException();
+        public override Task Login()
+        {
+            return Task.FromResult(true);
+        }
 
-        public override Task<IndexerResult> Query(Query query) => throw new NotImplementedException();
+        public override Task<IndexerResult> Query(Query query)
+        {
+            return Task.FromResult(new IndexerResult());
+        }
 
-        public override Task<bool> Logout() => throw new NotImplementedException();
+        public override Task Logout()
+        {
+            return Task.FromResult(true);
+        }
     }
 }

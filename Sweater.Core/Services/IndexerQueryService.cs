@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
@@ -15,14 +16,17 @@ namespace Sweater.Core.Services
     /// </summary>
     public class IndexerQueryService : IIndexerQueryService
     {
+        private readonly ILogger<IndexerQueryService> _logger;
         private readonly Func<Indexer, IIndexer> _getIndexer;
         private readonly QueryConfig _queryConfig;
 
         public IndexerQueryService(
-            Func<Indexer, IIndexer> getIndexer
+            ILogger<IndexerQueryService> logger
+            , Func<Indexer, IIndexer> getIndexer
             , QueryConfig queryConfig
         )
         {
+            _logger = logger;
             _getIndexer = getIndexer;
             _queryConfig = queryConfig;
         }
@@ -44,9 +48,35 @@ namespace Sweater.Core.Services
         {
             var indexers = GetIndexersForQuery(query.Indexer);
 
+            await Task.WhenAll(indexers.Select(
+                indexer => QueryIndexer(indexer, query)
+            ));
 
             // TODO: Actually query..
             return new List<IndexerResult>();
+        }
+
+        private async Task<IndexerResult> QueryIndexer(
+            IIndexer indexer
+            , Query query
+        )
+        {
+            IndexerResult result = null;
+
+            try
+            {
+                await indexer.Login();
+
+                result = await indexer.Query(query);
+
+                await indexer.Logout();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"{indexer} threw an exception during execution.");
+            }
+
+            return result;
         }
     }
 }

@@ -5,10 +5,10 @@ namespace Sweater.Core.Indexers.Contracts
 {
     public interface IIndexer
     {
-        Task<bool> Login();
+        Task Login();
 
         Task<IndexerResult> Query(Query query);
 
-        Task<bool> Logout();
+        Task Logout();
     }
 }
