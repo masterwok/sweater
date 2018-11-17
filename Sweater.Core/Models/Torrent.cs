@@ -1,4 +1,4 @@
-using System;
+using Sweater.Core.Extensions;
 
 namespace Sweater.Core.Models
 {
@@ -7,10 +7,12 @@ namespace Sweater.Core.Models
     /// </summary>
     public sealed class Torrent
     {
+        public string InfoHash => MagnetUri.ParseInfoHash();
+        public string MagnetUri { get; set; }
         public string Name { get; set; }
-        public string InfoHash { get; set; }
-        public DateTime UploadedOn { get; set; }
+        public string Size { get; set; }
         public int Seeders { get; set; }
         public int Leechers { get; set; }
+        public string UploadedOn { get; set; }
     }
 }
