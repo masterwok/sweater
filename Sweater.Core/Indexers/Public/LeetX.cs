@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -12,6 +13,15 @@ namespace Sweater.Core.Indexers.Public
 {
     public class LeetX : BaseIndexer
     {
+        private const string PaginationXPath = "/html/body/main/div/div/div/div[3]/div[2]/ul/li";
+        private const string TorrentRowXPath = "/html/body/main/div/div/div/div[3]/div[1]/table/tbody/tr";
+        private const string MagnetXPath = "/html/body/main/div/div/div/div[2]/div[1]/ul[1]/li[1]/a";
+        private const string TorrentNameXPath = "td[1]/a[2]";
+        private const string SeedersXPath = "td[2]";
+        private const string LeechersXPath = "td[3]";
+        private const string UploadedOnXPath = "td[4]";
+        private const string SizeXPath = "td[5]";
+
         // ReSharper disable once ClassNeverInstantiated.Local
         private sealed class Settings
         {
@@ -36,44 +46,57 @@ namespace Sweater.Core.Indexers.Public
 
         public override async Task<IndexerResult> Query(Query query)
         {
-            var requestUrl = CreateRequestUrl(
+            var rootNode = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
                 , 1
             );
 
-            var response = await HttpClient.GetStringAsync(requestUrl);
+            var firstPage = await ParseResponse(rootNode);
+            var lastPageIndex = GetLastPageIndex(rootNode);
+            var pageRange = Enumerable.Range(1, lastPageIndex);
+            var torrents = new List<Torrent>(firstPage);
 
-            await ParseResponse(response);
+            torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
+                {
+                    var response = await GetHtmlDocument(
+                        _settings.BaseUrl
+                        , query.QueryString
+                        , page
+                    );
 
-            return new IndexerResult();
+                    return await ParseResponse(response);
+                })
+            )).SelectMany(i => i));
+
+            return new IndexerResult
+            {
+                Indexer = this,
+                Torrents = torrents
+            };
         }
 
-        private static string CreateRequestUrl(
+        private async Task<HtmlNode> GetHtmlDocument(
             string baseUrl
             , string queryString
             , int page
-        ) => $"{baseUrl}/search/{queryString}/{page}/";
-
-        private const string PaginationXPath = "/html/body/main/div/div/div/div[3]/div[2]/ul/li";
-        private const string TorrentRowXPath = "/html/body/main/div/div/div/div[3]/div[1]/table/tbody/tr";
-        private const string MagnetXPath = "/html/body/main/div/div/div/div[2]/div[1]/ul[1]/li[1]/a";
-        private const string TorrentNameXPath = "td[1]/a[2]";
-        private const string SeedersXPath = "td[2]";
-        private const string LeechersXPath = "td[3]";
-        private const string UploadedOnXPath = "td[4]";
-        private const string SizeXPath = "td[5]";
-
-        private async Task ParseResponse(string response)
+        )
         {
-            var rootNode = response.ToHtmlDocument().DocumentNode;
+            var response = await HttpClient.GetStringAsync(
+                $"{baseUrl}/search/{queryString}/{page}/"
+            );
 
-            var lastPageIndex = GetLastPageIndex(rootNode);
-
-//            var torrentRows = rootNode.SelectNodes(TorrentRowXPath);
-//
-//            var torrents = await Task.WhenAll(torrentRows.Select(ParseTorrentRow));
+            return response
+                .ToHtmlDocument()
+                .DocumentNode;
         }
+
+        private async Task<IEnumerable<Torrent>> ParseResponse(HtmlNode rootNode)
+            => await Task.WhenAll(
+                rootNode
+                    .SelectNodes(TorrentRowXPath)
+                    .Select(ParseTorrentRow)
+            );
 
         private static int GetLastPageIndex(HtmlNode rootNode)
         {
