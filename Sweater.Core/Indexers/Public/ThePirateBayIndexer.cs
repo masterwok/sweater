@@ -9,13 +9,13 @@ namespace Sweater.Core.Indexers.Public
 {
     public class ThePirateBayIndexer : BaseIndexer
     {
-        private Settings _settings;
-
         // ReSharper disable once ClassNeverInstantiated.Local
         private sealed class Settings
         {
             public string Foo { get; set; }
         }
+
+        private Settings _settings;
 
         public ThePirateBayIndexer(IWebClient webClient) : base(webClient)
             => Expression.Empty();
@@ -27,19 +27,10 @@ namespace Sweater.Core.Indexers.Public
             return this;
         }
 
-        public override Task<bool> Login()
-        {
-            throw new NotImplementedException();
-        }
+        public override Task<bool> Login() => throw new NotImplementedException();
 
-        public override Task<IndexerResult> Query(string queryString)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task<IndexerResult> Query(Query query) => throw new NotImplementedException();
 
-        public override Task<bool> Logout()
-        {
-            throw new NotImplementedException();
-        }
+        public override Task<bool> Logout() => throw new NotImplementedException();
     }
 }

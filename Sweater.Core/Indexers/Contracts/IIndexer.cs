@@ -7,7 +7,7 @@ namespace Sweater.Core.Indexers.Contracts
     {
         Task<bool> Login();
 
-        Task<IndexerResult> Query(string queryString);
+        Task<IndexerResult> Query(Query query);
 
         Task<bool> Logout();
     }

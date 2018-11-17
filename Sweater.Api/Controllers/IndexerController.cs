@@ -12,12 +12,8 @@ namespace Sweater.Api.Controllers
     {
         private readonly IIndexerQueryService _queryService;
 
-        public IndexerController(
-            IIndexerQueryService queryService
-        )
-        {
-            _queryService = queryService;
-        }
+        public IndexerController(IIndexerQueryService queryService)
+            => _queryService = queryService;
 
         /// <summary>
         /// Get the tags of all of the implemented indexers.
