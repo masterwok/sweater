@@ -9,7 +9,7 @@ namespace Sweater.Api.Filters
     /// This filter will return a 400 bad request JSON response.
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
-    public sealed class ValidModelStateFilter : ActionFilterAttribute
+    public sealed class ValidModelStateFilterAttribute : ActionFilterAttribute
     {
         public override void OnResultExecuting(ResultExecutingContext context)
         {

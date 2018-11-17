@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,10 @@ namespace Sweater.Api.Controllers
         [Route("[action]")]
         public async Task<IEnumerable<IndexerResult>> Query(
             [FromBody] Query query
-        ) => await _queryService.Query(query);
+        )
+        {
+            throw new Exception("asdf");
+            return await _queryService.Query(query);
+        }
     }
 }
