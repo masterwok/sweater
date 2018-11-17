@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
+using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Models;
 
@@ -26,7 +28,10 @@ namespace Sweater.Core.Indexers.Public
         private sealed class Settings
         {
             public string BaseUrl { get; set; }
+            public int MaxPages { get; set; }
         }
+
+        public override string Tag => Indexer.LeetX.ToString();
 
         private Settings _settings;
 
@@ -44,7 +49,7 @@ namespace Sweater.Core.Indexers.Public
 
         public override Task Logout() => Task.FromResult(0);
 
-        public override async Task<IndexerResult> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(Query query)
         {
             var rootNode = await GetHtmlDocument(
                 _settings.BaseUrl
@@ -52,10 +57,15 @@ namespace Sweater.Core.Indexers.Public
                 , 1
             );
 
+
             var firstPage = await ParseResponse(rootNode);
-            var lastPageIndex = GetLastPageIndex(rootNode);
-            var pageRange = Enumerable.Range(1, lastPageIndex);
             var torrents = new List<Torrent>(firstPage);
+            var lastPageIndex = GetLastPageIndex(rootNode);
+
+            var pageRange = lastPageIndex == 2
+                ? new[] {2}
+                // TODO: Need to fix max pages logic
+                : Enumerable.Range(2, lastPageIndex);
 
             torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
                 {
@@ -69,11 +79,7 @@ namespace Sweater.Core.Indexers.Public
                 })
             )).SelectMany(i => i));
 
-            return new IndexerResult
-            {
-                Indexer = this,
-                Torrents = torrents
-            };
+            return torrents;
         }
 
         private async Task<HtmlNode> GetHtmlDocument(
@@ -102,7 +108,7 @@ namespace Sweater.Core.Indexers.Public
         {
             var pageListItems = rootNode.SelectNodes(PaginationXPath);
 
-            switch (pageListItems.Count)
+            switch (pageListItems?.Count ?? 0)
             {
                 case 0:
                     return 0;

@@ -1,7 +1,8 @@
 {
   "indexers": {
     "leetX": {
-      "baseUrl": "https://1337x.to"
+      "baseUrl": "https://1337x.to",
+      "maxPages": "3"
     },
     "thePirateBay": {
       "foo": "bar"

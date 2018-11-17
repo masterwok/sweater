@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
@@ -21,6 +22,11 @@ namespace Sweater.Core.Indexers
     /// </summary>
     public abstract class BaseIndexer : IIndexer
     {
+        /// <summary>
+        /// A unique indexer tag.
+        /// </summary>
+        public abstract string Tag { get; }
+
         /// <summary>
         /// An IHttpClient instance that is used to make requests to indexers.
         /// </summary>
@@ -53,7 +59,8 @@ namespace Sweater.Core.Indexers
         /// Query the indexer for torrents.
         /// </summary>
         /// <param name="query">The query provided from the client.</param>
-        public abstract Task<IndexerResult> Query(Query query);
+        /// <returns>An enumerable collection of torrent results.</returns>
+        public abstract Task<IEnumerable<Torrent>> Query(Query query);
 
         /// <summary>
         /// End authenticated session with the indexer. This method is invoked last in the query

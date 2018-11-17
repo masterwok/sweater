@@ -48,12 +48,9 @@ namespace Sweater.Core.Services
         {
             var indexers = GetIndexersForQuery(query.Indexer);
 
-            await Task.WhenAll(indexers.Select(
+            return await Task.WhenAll(indexers.Select(
                 indexer => QueryIndexer(indexer, query)
             ));
-
-            // TODO: Actually query..
-            return new List<IndexerResult>();
         }
 
         private async Task<IndexerResult> QueryIndexer(
@@ -61,13 +58,16 @@ namespace Sweater.Core.Services
             , Query query
         )
         {
-            IndexerResult result = null;
+            var result = new IndexerResult
+            {
+                Indexer = indexer.Tag
+            };
 
             try
             {
                 await indexer.Login();
 
-                result = await indexer.Query(query);
+                result.Torrents = await indexer.Query(query);
 
                 await indexer.Logout();
             }

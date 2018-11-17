@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
+using Sweater.Core.Constants;
 using Sweater.Core.Models;
 
 namespace Sweater.Core.Indexers.Public
@@ -15,6 +17,8 @@ namespace Sweater.Core.Indexers.Public
         {
             public string Foo { get; set; }
         }
+
+        public override string Tag => Indexer.ThePirateBay.ToString();
 
         private Settings _settings;
 
@@ -33,9 +37,9 @@ namespace Sweater.Core.Indexers.Public
             return Task.FromResult(true);
         }
 
-        public override Task<IndexerResult> Query(Query query)
+        public override Task<IEnumerable<Torrent>> Query(Query query)
         {
-            return Task.FromResult(new IndexerResult());
+            return null;
         }
 
         public override Task Logout()
