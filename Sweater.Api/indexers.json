@@ -1,6 +1,9 @@
 {
   "indexers": {
-    "thepiratebay": {
+    "leetX": {
+      "baseUrl": "https://1337x.to"
+    },
+    "thePirateBay": {
       "foo": "bar"
     }
   }

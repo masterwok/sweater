@@ -22,15 +22,15 @@ namespace Sweater.Core.Indexers
     public abstract class BaseIndexer : IIndexer
     {
         /// <summary>
-        /// A WebClient instance that is used to make requests to indexers.
+        /// An IHttpClient instance that is used to make requests to indexers.
         /// </summary>
-        protected readonly IWebClient WebClient;
+        protected readonly IHttpClient HttpClient;
 
         /// <summary>
         /// Create a new indexer instance.
         /// </summary>
-        /// <param name="webClient">A WebClient instance for making requests to indexers.</param>
-        protected BaseIndexer(IWebClient webClient) => WebClient = webClient;
+        /// <param name="httpClient">An IHttpClient instance for making requests to indexers.</param>
+        protected BaseIndexer(IHttpClient httpClient) => HttpClient = httpClient;
 
         /// <summary>
         /// Configure the indexer.

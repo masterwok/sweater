@@ -65,7 +65,7 @@ namespace Sweater.Api
             services.AddSingleton(_queryConfig);
 
             // Clients
-            services.AddTransient<IWebClient, WebClientWrapper>();
+            services.AddTransient<IHttpClient, HttpClientWrapper>();
 
             // Indexers
             services.AddTransient<ThePirateBayIndexer>();

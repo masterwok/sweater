@@ -18,7 +18,7 @@ namespace Sweater.Core.Indexers.Public
 
         private Settings _settings;
 
-        public ThePirateBayIndexer(IWebClient webClient) : base(webClient)
+        public ThePirateBayIndexer(IHttpClient httpClient) : base(httpClient)
             => Expression.Empty();
 
         public override BaseIndexer Configure(IConfiguration configuration)
