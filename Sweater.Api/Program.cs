@@ -8,7 +8,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Sweater.Api
 {
-    public class Program
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public sealed class Program
     {
         private const int Port = 8080;
 

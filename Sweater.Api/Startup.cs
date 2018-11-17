@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Sweater.Api.Filters;
 using Sweater.Core.Clients;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers;
@@ -44,7 +45,13 @@ namespace Sweater.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc(options =>
+                {
+                    // Controller filter attributes
+                    options.Filters.Add<ValidModelStateFilter>();
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Services
             services.AddTransient<IIndexerQueryService, IndexerQueryService>();

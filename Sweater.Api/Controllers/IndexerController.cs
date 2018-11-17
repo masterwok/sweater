@@ -12,6 +12,7 @@ namespace Sweater.Api.Controllers
     {
         private readonly IIndexerQueryService _queryService;
 
+
         public IndexerController(IIndexerQueryService queryService)
             => _queryService = queryService;
 
@@ -21,8 +22,7 @@ namespace Sweater.Api.Controllers
         /// <returns>A string array of indexer tags.</returns>
         [HttpGet]
         [Route("[action]")]
-        public async Task<IEnumerable<string>> Tags()
-            => await _queryService.GetIndexerTags();
+        public async Task<IEnumerable<string>> Tags() => await _queryService.GetIndexerTags();
 
         /// <summary>
         /// Query the indexers.

@@ -1,3 +1,4 @@
+using Sweater.Core.Attributes;
 using Sweater.Core.Constants;
 
 namespace Sweater.Core.Models
@@ -8,7 +9,9 @@ namespace Sweater.Core.Models
     /// </summary>
     public class Query
     {
-        public Indexer Indexer { get; set; }
+        [ValidEnum]
+        public Indexer Indexer { get; set; } = Indexer.All;
+
         public string QueryString { get; set; }
 
         public override string ToString() => $"Indexer Tag = {Indexer}, " +

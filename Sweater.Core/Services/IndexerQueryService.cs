@@ -38,13 +38,7 @@ namespace Sweater.Core.Services
             var indexer = _getIndexer(query.Indexer);
 
             // TODO: Actually query..
-            return new List<IndexerResult>
-            {
-                new IndexerResult(),
-                new IndexerResult(),
-                new IndexerResult(),
-                new IndexerResult()
-            };
+            return new List<IndexerResult>();
         }
 
         public async Task<IndexerResult> QueryByIndexer(
