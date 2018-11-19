@@ -25,6 +25,7 @@ namespace Sweater.Core.Indexers.Public
         private const string SizeXPath = "td[5]";
 
         // ReSharper disable once ClassNeverInstantiated.Local
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
         private sealed class Settings
         {
             public string BaseUrl { get; set; }
@@ -128,7 +129,7 @@ namespace Sweater.Core.Indexers.Public
                     return 0;
                 case 2:
                     return 2;
-                default: return ParseLastPageButton(pageListItems.LastOrDefault());
+                default: return 0;
             }
         }
 
