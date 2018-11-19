@@ -57,15 +57,15 @@ namespace Sweater.Core.Indexers.Public
                 , 1
             );
 
-
             var firstPage = await ParseResponse(rootNode);
             var torrents = new List<Torrent>(firstPage);
             var lastPageIndex = GetLastPageIndex(rootNode);
+            var pageRange = GetPageRange(lastPageIndex, _settings.MaxPages);
 
-            var pageRange = lastPageIndex == 2
-                ? new[] {2}
-                // TODO: Need to fix max pages logic
-                : Enumerable.Range(2, lastPageIndex);
+            if (pageRange == null)
+            {
+                return torrents;
+            }
 
             torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
                 {
@@ -80,6 +80,20 @@ namespace Sweater.Core.Indexers.Public
             )).SelectMany(i => i));
 
             return torrents;
+        }
+
+        private static IEnumerable<int> GetPageRange(
+            int lastPageIndex
+            , int maxPages
+        )
+        {
+            var remainingPageCount = Math.Min(maxPages, lastPageIndex) - 1;
+
+            return remainingPageCount <= 0
+                ? null
+                : Enumerable
+                    .Range(2, remainingPageCount)
+                    .ToList();
         }
 
         private async Task<HtmlNode> GetHtmlDocument(
