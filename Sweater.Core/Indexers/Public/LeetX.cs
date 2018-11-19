@@ -129,7 +129,7 @@ namespace Sweater.Core.Indexers.Public
                     return 0;
                 case 2:
                     return 2;
-                default: return 0;
+                default: return ParseLastPageButton(pageListItems?.LastOrDefault());
             }
         }
 
