@@ -7,6 +7,7 @@ namespace Sweater.Core.Constants
     {
         All,
         ThePirateBay,
-        LeetX
+        LeetX,
+        Rarbg
     }
 }

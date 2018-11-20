@@ -103,7 +103,6 @@ namespace Sweater.Core.Indexers.Public
                     .ToList();
         }
 
-
         private async Task<HtmlNode> GetHtmlDocument(
             string baseUrl
             , string queryString

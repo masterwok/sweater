@@ -38,6 +38,7 @@ namespace Sweater.Api
             {
                 case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>();
                 case Indexer.LeetX: return serviceProvider.GetService<LeetX>();
+                case Indexer.Rarbg: return serviceProvider.GetService<Rarbg>();
                 case Indexer.All: throw new InvalidEnumArgumentException("All indexer has no class to instantiate.");
                 default: throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
             }
@@ -70,6 +71,7 @@ namespace Sweater.Api
             // Indexers
             services.AddTransient<ThePirateBayIndexer>();
             services.AddTransient<LeetX>();
+            services.AddTransient<Rarbg>();
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>

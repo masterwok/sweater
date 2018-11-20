@@ -7,6 +7,10 @@
     "thePirateBay": {
       "baseUrl": "https://thepiratebay.online",
       "maxPages": "3"
+    },
+    "rarbg": {
+      "baseUrl": "https://rarbg.to",
+      "maxPages": "3"
     }
   }
 }
