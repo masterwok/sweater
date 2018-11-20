@@ -2,10 +2,10 @@
   "indexers": {
     "leetX": {
       "baseUrl": "https://1337x.to",
-      "maxPages": "3"
+      "maxPages": "1"
     },
     "thePirateBay": {
-      "foo": "bar"
+      "baseUrl": "https://thepiratebay.online"
     }
   }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Sweater.Core.Extensions;
 
 namespace Sweater.Core.Models
@@ -5,6 +6,9 @@ namespace Sweater.Core.Models
     /// <summary>
     /// This model represents a single torrent entry.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public sealed class Torrent
     {
         public string InfoHash => MagnetUri.ParseInfoHash();
