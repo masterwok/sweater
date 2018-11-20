@@ -117,7 +117,8 @@ namespace Sweater.Core.Indexers.Public
                     MagnetUri = torrentNode.SelectSingleNode(MagnetUriXPath)?.GetAttributeValue("href", null),
                     Seeders = int.Parse(torrentNode.SelectSingleNode(SeedersXPath).InnerText ?? "0"),
                     Leechers = int.Parse(torrentNode.SelectSingleNode(LeechersXPath).InnerText ?? "0"),
-                    UploadedOn = ParseUploadedOn(infoText)
+                    UploadedOn = ParseUploadedOn(infoText),
+                    Size = ParseSize(infoText)
                 };
             }
             catch (Exception exception)
@@ -126,6 +127,11 @@ namespace Sweater.Core.Indexers.Public
                 return null;
             }
         }
+
+        private static string ParseSize(string infoText) => InfoTextRegex
+            .Match(infoText)
+            .Groups[2]
+            .Value;
 
         private static string ParseUploadedOn(string infoText)
         {
