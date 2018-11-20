@@ -85,11 +85,23 @@ namespace Sweater.Core.Indexers.Public
         {
             var nodes = rootNode.SelectNodes(TorrentRowXPath);
 
-            nodes.RemoveAt(nodes.Count - 1);
+            return nodes
+                .Where(n => !ShouldSkipRow(n))
+                .Select(TryParseRow);
+        }
 
-            var dev = TryParseRow(nodes.First());
+        private static bool ShouldSkipRow(HtmlNode node)
+        {
+            // Skip row containing paging information.
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (node.Descendants().FirstOrDefault(d => d.Attributes["colspan"] != null) != null)
+            {
+                return true;
+            }
 
-            return nodes.Select(TryParseRow);
+            // Add more row skip rules here if required in the future..
+
+            return false;
         }
 
         /// <summary>
