@@ -30,9 +30,11 @@ namespace Sweater.Core.Indexers.Public
         private Settings _settings;
 
         // ReSharper disable once ClassNeverInstantiated.Local
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
         private sealed class Settings
         {
             public string BaseUrl { get; set; }
+            public int MaxPages { get; set; }
         }
 
         public override string Tag => Indexer.ThePirateBay.ToString();
@@ -61,10 +63,46 @@ namespace Sweater.Core.Indexers.Public
                 , 1
             );
 
-            var torrents = ParseTorrentEntries(rootNode);
+            var torrentNodes = rootNode.SelectNodes(TorrentRowXPath);
+            var firstPage = ParseTorrentEntries(torrentNodes);
+            var torrents = new List<Torrent>(firstPage);
+            var lastPageIndex = GetLastPageIndex(torrentNodes.Last());
+            var pageRange = GetPageRange(lastPageIndex, _settings.MaxPages);
+
+            if (pageRange == null)
+            {
+                return torrents;
+            }
+
+            torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
+                {
+                    var response = await GetHtmlDocument(
+                        _settings.BaseUrl
+                        , query.QueryString
+                        , page
+                    );
+
+                    return ParseTorrentEntries(response.SelectNodes(TorrentRowXPath));
+                })
+            )).SelectMany(i => i));
 
             return torrents;
         }
+
+        private static IEnumerable<int> GetPageRange(
+            int lastPageIndex
+            , int maxPages
+        )
+        {
+            var remainingPageCount = Math.Min(maxPages, lastPageIndex) - 1;
+
+            return remainingPageCount <= 0
+                ? null
+                : Enumerable
+                    .Range(1, remainingPageCount)
+                    .ToList();
+        }
+
 
         private async Task<HtmlNode> GetHtmlDocument(
             string baseUrl
@@ -81,20 +119,45 @@ namespace Sweater.Core.Indexers.Public
                 .DocumentNode;
         }
 
-        private IEnumerable<Torrent> ParseTorrentEntries(HtmlNode rootNode)
-        {
-            var nodes = rootNode.SelectNodes(TorrentRowXPath);
+        private IEnumerable<Torrent> ParseTorrentEntries(HtmlNodeCollection nodes) => nodes
+            .Where(n => !ShouldSkipRow(n))
+            .Select(TryParseRow);
 
-            return nodes
-                .Where(n => !ShouldSkipRow(n))
-                .Select(TryParseRow);
+        private int GetLastPageIndex(HtmlNode lastTableNode)
+        {
+            if (!IsPaginationRow(lastTableNode))
+            {
+                return 0;
+            }
+
+            try
+            {
+                return lastTableNode
+                    .Descendants()
+                    .Where(d => d.Name == "a")
+                    .Where(d => d.Descendants().All(n => n.Name != "img"))
+                    .Select(d => d.Attributes["href"]?.Value)
+                    .Where(d => d != null)
+                    .Select(h => Regex.Match(h, @"/(\d+)/(\d+)/\d+$").Groups[1].Value)
+                    .Select(int.Parse)
+                    .Last();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Failed to read last page index", exception);
+                return 0;
+            }
         }
+
+        private static bool IsPaginationRow(HtmlNode node)
+            => node.Descendants()
+                   .FirstOrDefault(d => d.Attributes["colspan"] != null) != null;
 
         private static bool ShouldSkipRow(HtmlNode node)
         {
             // Skip row containing paging information.
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (node.Descendants().FirstOrDefault(d => d.Attributes["colspan"] != null) != null)
+            if (IsPaginationRow(node))
             {
                 return true;
             }
@@ -122,7 +185,6 @@ namespace Sweater.Core.Indexers.Public
                 var infoText = DecodeAndFixWhitespace(
                     torrentNode.SelectSingleNode(DetailsXpath)?.InnerText
                 );
-
                 return new Torrent
                 {
                     Name = torrentNode.SelectSingleNode(TorrentNameXPath).InnerText,
@@ -147,10 +209,10 @@ namespace Sweater.Core.Indexers.Public
 
         private static string ParseUploadedOn(string infoText)
         {
-            var text = InfoTextRegex.Match(infoText)
+            var text = InfoTextRegex
+                .Match(infoText)
                 .Groups[1]
                 .Value;
-
             return text.Contains(':')
                 ? $"{text.Substring(0, text.IndexOf(' '))}-{DateTime.Now.Year}"
                 : text.Replace(' ', '-');
