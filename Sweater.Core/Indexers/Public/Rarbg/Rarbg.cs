@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.WebUtilities;
@@ -14,8 +15,21 @@ using Sweater.Core.Models;
 
 namespace Sweater.Core.Indexers.Public.Rarbg
 {
+    // Seems like torrentapi is needed?
+    // Docs: https://torrentapi.org/apidocs_v2.txt
+
+    // Get token:
+    // https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=test
+
+    // Search, sort seeders, json extended, limit
+    // https://torrentapi.org/pubapi_v2.php?mode=search&search_string=Blade%20Runner&app_id=test&sort=seeders&format=json_extended&limit=100&token=avtns5qpmk
+
+    // Need to set web client delay
     public class Rarbg : BaseIndexer
     {
+        // Request rate limiting is set to 1 request / 2 seconds.
+        private static readonly int RequestDelayMs = 2100;
+
         private Settings _settings;
 
         private ILogger<Rarbg> _logger;
@@ -29,6 +43,8 @@ namespace Sweater.Core.Indexers.Public.Rarbg
 
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
+
+        private string ApiEndpoint => $"{_settings.BaseUrl}/pubapi_v2.php";
 
         public override string Tag => Indexer.Rarbg.ToString();
 
@@ -45,12 +61,40 @@ namespace Sweater.Core.Indexers.Public.Rarbg
 
         public override async Task<IEnumerable<Torrent>> Query(Query query)
         {
-            var tokenResponse = await GetToken(_settings.AppId);
+            var appId = _settings.AppId;
 
-            return null;
+            var tokenResponse = await GetToken(appId);
+
+            await Task.Delay(RequestDelayMs);
+
+            // https://torrentapi.org/pubapi_v2.php?mode=search&search_string=Blade%20Runner&app_id=test&sort=seeders&format=json_extended&limit=100&token=avtns5qpmk
+            var requestUri = QueryHelpers.AddQueryString(
+                ApiEndpoint,
+                new Dictionary<string, string>
+                {
+                    {"mode", "search"},
+                    {"app_id", appId},
+                    {"token", tokenResponse.Token},
+                    {"search_string", query.QueryString},
+                    {"limit", "100"},
+                    {"sort", "seeders"},
+                    {"format", "json_extended"}
+                }
+            );
+
+            var response = await HttpClient.GetStringAsync(requestUri);
+            var queryResponse = JsonConvert.DeserializeObject<QueryResponse>(response);
+
+            return queryResponse.TorrentResults.Select(r => new Torrent
+            {
+                Name = r.Title,
+                MagnetUri = r.Download,
+                Size = ((long) (r.Size ?? 0L)).ToHumanReadableByteCount(false),
+                Seeders = r.Seeders,
+                Leechers = r.Leechers,
+                UploadedOn = r.Pubdate
+            });
         }
-
-        private string ApiEndpoint => $"{_settings.BaseUrl}/pubapi_v2.php";
 
         private async Task<TokenResponse> GetToken(string appId)
         {
@@ -66,34 +110,6 @@ namespace Sweater.Core.Indexers.Public.Rarbg
             var response = await HttpClient.GetStringAsync(requestUri);
 
             return JsonConvert.DeserializeObject<TokenResponse>(response);
-        }
-
-        // Seems like torrentapi is needed?
-        // Docs: https://torrentapi.org/apidocs_v2.txt
-
-        // Get token:
-        // https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=test
-
-        // Search, sort seeders, json extended, limit
-        // https://torrentapi.org/pubapi_v2.php?mode=search&search_string=Blade%20Runner&app_id=test&sort=seeders&format=json_extended&limit=100&token=avtns5qpmk
-
-        // Need to set web client delay
-
-        private async Task<HtmlNode> GetHtmlDocument(
-            string baseUrl
-            , string queryString
-            , int page
-        )
-        {
-            var url = $"{baseUrl}/torrents.php?search={queryString}&page={page}&order=seeders&by=DESC";
-            var response = await HttpClient.GetStringAsync(
-//                https://rarbg.to/torrents.php?search=hackers+1995&order=seeders&by=DESC
-                $"{baseUrl}/torrents.php?search={queryString}&page={page}&order=seeders&by=DESC"
-            );
-
-            return response
-                .ToHtmlDocument()
-                .DocumentNode;
         }
     }
 }

@@ -6,7 +6,7 @@
     },
     "thePirateBay": {
       "baseUrl": "https://thepiratebay.online",
-      "maxPages": "3"
+      "maxPages": "1"
     },
     "rarbg": {
       "baseUrl": "https://torrentapi.org",

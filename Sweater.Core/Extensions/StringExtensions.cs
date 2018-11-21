@@ -28,5 +28,6 @@ namespace Sweater.Core.Extensions
 
             return match.Success ? match.Groups[1].Value : null;
         }
+
     }
 }
