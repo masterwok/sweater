@@ -9,9 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
+using Sweater.Core.Indexers.Public.LeetX.Models;
 using Sweater.Core.Models;
 
-namespace Sweater.Core.Indexers.Public
+namespace Sweater.Core.Indexers.Public.LeetX
 {
     public class LeetX : BaseIndexer
     {
@@ -23,14 +24,6 @@ namespace Sweater.Core.Indexers.Public
         private const string LeechersXPath = "td[3]";
         private const string UploadedOnXPath = "td[4]";
         private const string SizeXPath = "td[5]";
-
-        // ReSharper disable once ClassNeverInstantiated.Local
-        // ReSharper disable UnusedAutoPropertyAccessor.Local
-        private sealed class Settings
-        {
-            public string BaseUrl { get; set; }
-            public int MaxPages { get; set; }
-        }
 
         public override string Tag => Indexer.LeetX.ToString();
 

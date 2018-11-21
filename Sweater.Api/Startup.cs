@@ -14,6 +14,9 @@ using Sweater.Core.Constants;
 using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public;
+using Sweater.Core.Indexers.Public.LeetX;
+using Sweater.Core.Indexers.Public.Rarbg;
+using Sweater.Core.Indexers.Public.ThePirateBay;
 using Sweater.Core.Models;
 using Sweater.Core.Services;
 using Sweater.Core.Services.Contracts;
@@ -36,7 +39,7 @@ namespace Sweater.Api
         {
             switch (indexer)
             {
-                case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBayIndexer>();
+                case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBay>();
                 case Indexer.LeetX: return serviceProvider.GetService<LeetX>();
                 case Indexer.Rarbg: return serviceProvider.GetService<Rarbg>();
                 case Indexer.All: throw new InvalidEnumArgumentException("All indexer has no class to instantiate.");
@@ -69,7 +72,7 @@ namespace Sweater.Api
             services.AddTransient<IHttpClient, HttpClientWrapper>();
 
             // Indexers
-            services.AddTransient<ThePirateBayIndexer>();
+            services.AddTransient<ThePirateBay>();
             services.AddTransient<LeetX>();
             services.AddTransient<Rarbg>();
 

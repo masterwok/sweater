@@ -24,4 +24,10 @@
       <None Remove="config.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.WebUtilities, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\.nuget\packages\microsoft.aspnetcore.webutilities\2.1.1\lib\netstandard2.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

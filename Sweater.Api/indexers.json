@@ -9,8 +9,8 @@
       "maxPages": "3"
     },
     "rarbg": {
-      "baseUrl": "https://rarbg.to",
-      "maxPages": "3"
+      "baseUrl": "https://torrentapi.org",
+      "appId": "sweater"
     }
   }
 }

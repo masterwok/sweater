@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,11 +10,12 @@ using Microsoft.Extensions.Logging;
 using Sweater.Core.Clients;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
+using Sweater.Core.Indexers.Public.ThePirateBay.Models;
 using Sweater.Core.Models;
 
-namespace Sweater.Core.Indexers.Public
+namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
-    public class ThePirateBayIndexer : BaseIndexer
+    public class ThePirateBay : BaseIndexer
     {
         private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
         private static readonly string TorrentNameXPath = "td[2]/div/a";
@@ -25,23 +25,15 @@ namespace Sweater.Core.Indexers.Public
         private static readonly string DetailsXpath = "td[2]/font";
         private static readonly Regex InfoTextRegex = new Regex(@"Uploaded\s*([\d\W]*),\s*Size\s*(.*),");
 
-        private readonly ILogger<ThePirateBayIndexer> _logger;
+        private readonly ILogger<ThePirateBay> _logger;
 
         private Settings _settings;
 
-        // ReSharper disable once ClassNeverInstantiated.Local
-        // ReSharper disable UnusedAutoPropertyAccessor.Local
-        private sealed class Settings
-        {
-            public string BaseUrl { get; set; }
-            public int MaxPages { get; set; }
-        }
-
         public override string Tag => Indexer.ThePirateBay.ToString();
 
-        public ThePirateBayIndexer(
+        public ThePirateBay(
             IHttpClient httpClient
-            , ILogger<ThePirateBayIndexer> logger
+            , ILogger<ThePirateBay> logger
         ) : base(httpClient) => _logger = logger;
 
         public override BaseIndexer Configure(IConfiguration configuration)
