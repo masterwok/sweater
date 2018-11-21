@@ -16,12 +16,12 @@ namespace Sweater.Core.Models
         /// <summary>
         /// The unique identifier of the indexer.
         /// </summary>
-        public string Indexer { get; set; }
+        public string Indexer { get; set; } = string.Empty;
 
         /// <summary>
         /// A collection of torrents found on this indexer.
         /// </summary>
-        public IEnumerable<Torrent> Torrents { get; set; }
+        public IEnumerable<Torrent> Torrents { get; set; } = new List<Torrent>();
 
         /// <summary>
         /// The total number of torrent items in the result.
