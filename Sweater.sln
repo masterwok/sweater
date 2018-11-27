@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sweater.Api", "Sweater.Api\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sweater.Core", "Sweater.Core\Sweater.Core.csproj", "{5E2E976D-0836-402C-89DB-53D3B70D3CF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sweater.Android", "Sweater.Android\Sweater.Android.csproj", "{118350D2-8305-46B9-84AA-39210A732C96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E2E976D-0836-402C-89DB-53D3B70D3CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118350D2-8305-46B9-84AA-39210A732C96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118350D2-8305-46B9-84AA-39210A732C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118350D2-8305-46B9-84AA-39210A732C96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118350D2-8305-46B9-84AA-39210A732C96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
