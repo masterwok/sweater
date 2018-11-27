@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sweater.Core.Attributes
+namespace Sweater.Api.Attributes
 {
     public class ValidEnumAttribute : ValidationAttribute
     {

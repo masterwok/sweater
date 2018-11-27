@@ -29,10 +29,6 @@ namespace Sweater.Core.Clients
         Task<Stream> GetStreamAsync(Uri requestUri);
         Task<string> GetStringAsync(string requestUri);
         Task<string> GetStringAsync(Uri requestUri);
-        Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content);
-        Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content, CancellationToken cancellationToken);
-        Task<HttpResponseMessage> PatchAsync(Uri requestUri, HttpContent content);
-        Task<HttpResponseMessage> PatchAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken);
         Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent content);
         Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent content, CancellationToken cancellationToken);
         Task<HttpResponseMessage> PostAsync(Uri requestUri, HttpContent content);

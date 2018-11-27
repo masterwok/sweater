@@ -111,26 +111,6 @@ namespace Sweater.Core.Clients
             return _httpClient.GetStringAsync(requestUri);
         }
 
-        public Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content)
-        {
-            return _httpClient.PatchAsync(requestUri, content);
-        }
-
-        public Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content, CancellationToken cancellationToken)
-        {
-            return _httpClient.PatchAsync(requestUri, content, cancellationToken);
-        }
-
-        public Task<HttpResponseMessage> PatchAsync(Uri requestUri, HttpContent content)
-        {
-            return _httpClient.PatchAsync(requestUri, content);
-        }
-
-        public Task<HttpResponseMessage> PatchAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken)
-        {
-            return _httpClient.PatchAsync(requestUri, content, cancellationToken);
-        }
-
         public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent content)
         {
             return _httpClient.PostAsync(requestUri, content);

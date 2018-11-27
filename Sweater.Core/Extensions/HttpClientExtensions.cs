@@ -3,9 +3,9 @@ using Sweater.Core.Clients;
 namespace Sweater.Core.Extensions
 {
     /// <summary>
-    /// A collection of extension methods for IHttpClient.
+    /// A collection of extension methods for HttpClient.
     /// </summary>
-    public static class IHttpClientExtensions
+    public static class HttpClientExtensions
     {
         /// <summary>
         /// Set the default user-agent of an IHttpClient.

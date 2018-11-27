@@ -13,16 +13,11 @@ using Sweater.Core.Models;
 
 namespace Sweater.Core.Indexers.Public.Rarbg
 {
-    // Seems like torrentapi is needed?
-    // Docs: https://torrentapi.org/apidocs_v2.txt
-
-    // Get token:
-    // https://torrentapi.org/pubapi_v2.php?get_token=get_token&app_id=test
-
-    // Search, sort seeders, json extended, limit
-    // https://torrentapi.org/pubapi_v2.php?mode=search&search_string=Blade%20Runner&app_id=test&sort=seeders&format=json_extended&limit=100&token=avtns5qpmk
-
-    // Need to set web client delay
+    /// <inheritdoc />
+    /// <summary>
+    /// This Rarbg indexer uses the torrent Restful API provided by Rarbg. Documentation surrounding
+    /// the API can be found at: https://torrentapi.org/apidocs_v2.txt
+    /// </summary>
     public class Rarbg : BaseIndexer
     {
         // Request rate limiting is set to 1 request / 2 seconds.
@@ -30,15 +25,9 @@ namespace Sweater.Core.Indexers.Public.Rarbg
 
         private Settings _settings;
 
-        private ILogger<Rarbg> _logger;
-
-        public Rarbg(
-            IHttpClient httpClient
-            , ILogger<Rarbg> logger
-        ) : base(httpClient)
+        public Rarbg(IHttpClient httpClient) : base(httpClient)
         {
-            _logger = logger;
-
+            // Torrent API requires a browser user-agent.
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
