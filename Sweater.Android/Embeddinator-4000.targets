@@ -1,0 +1,11 @@
+<Project
+    DefaultTargets="Build"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Target
+        Name="RunEmbeddinator"
+        AfterTargets="AfterBuild"
+        Inputs="$(OutputPath)/$(AssemblyName).dll"
+        Outputs="$(IntermediateOutputPath)/Embeddinator/$(AssemblyName).framework/$(AssemblyName)">
+        <Exec Command="mono '${SolutionDir}/packages/Embeddinator-4000.0.4.0/tools/Embeddinator-4000.exe' '${TargetPath}' --gen=Java --platform=Android --outdir='${SolutionDir}/output' -c"/>
+    </Target>
+</Project>
