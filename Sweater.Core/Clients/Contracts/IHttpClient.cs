@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sweater.Core.Clients
+namespace Sweater.Core.Clients.Contracts
 {
     public interface IHttpClient
     {

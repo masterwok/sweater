@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Sweater.Api.Filters;
 using Sweater.Core.Clients;
+using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;

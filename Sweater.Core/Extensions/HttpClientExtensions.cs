@@ -1,4 +1,5 @@
 using Sweater.Core.Clients;
+using Sweater.Core.Clients.Contracts;
 
 namespace Sweater.Core.Extensions
 {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients;
+using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
 
