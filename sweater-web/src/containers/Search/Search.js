@@ -50,8 +50,9 @@ class Search extends Component {
         return (
             <>
                 <div className={classes.search}>
-                    {this.state.torrents.map(t => (
+                    {this.state.torrents.map((t, i) => (
                         <TorrentCard
+                            key={i}
                             className={classes.torrentCard}
                             name={t.name}
                             magnetUri={t.magnetUri}
