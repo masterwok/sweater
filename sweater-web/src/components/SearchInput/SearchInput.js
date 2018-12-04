@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import InputBase from '@material-ui/core/InputBase';
 import {withStyles} from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
@@ -46,9 +47,19 @@ const styles = theme => ({
     },
 });
 
+
 const searchInput = (props) => {
 
     const {classes} = props;
+
+    const onKeyUp = (event) => {
+        // Ignore until enter is pressed
+        if (event.keyCode !== 13) {
+            return;
+        }
+
+        props.onSearch(event.target.value);
+    };
 
     return (
         <div className={classes.search}>
@@ -56,6 +67,8 @@ const searchInput = (props) => {
                 <SearchIcon/>
             </div>
             <InputBase
+                onKeyUp={onKeyUp}
+                autoFocus
                 placeholder="Search…"
                 classes={{
                     root: classes.inputRoot,
@@ -63,6 +76,10 @@ const searchInput = (props) => {
                 }}/>
         </div>
     );
+};
+
+searchInput.propTypes = {
+    onSearch: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(searchInput);
