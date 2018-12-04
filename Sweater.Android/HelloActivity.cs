@@ -1,10 +1,11 @@
 using Android.App;
 using Android.OS;
 using Android.Runtime;
-using Android.Util;
+
 
 namespace Sweater.Android
 {
+//    [Activity(Label = "Dummy", MainLauncher = true, Icon = "@drawable/icon")]
     [Activity(Label = "HelloActivity"), Register("sweater_android.HelloActivity")]
     public class HelloActivity : Activity
     {
@@ -12,9 +13,7 @@ namespace Sweater.Android
         {
             base.OnCreate(savedInstanceState);
 
-            Log.Debug("HELLO", "HELLO, WORLD!");
-
-//            SetContentView(Resource.Layout.hello);
+            SetContentView(Resource.Layout.Main);
         }
     }
 }
