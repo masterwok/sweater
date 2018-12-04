@@ -1,0 +1,23 @@
+
+.content {
+    margin-top: 12px;
+}
+
+.uploadedOn {
+    padding-top: 10px;
+}
+
+.stat {
+    display: inline-block;
+    padding-top: 4px;
+    padding-right: 8px;
+}
+
+.stat svg, span {
+    vertical-align: middle;
+}
+
+.stat span {
+    margin-left: 4px;
+}
+

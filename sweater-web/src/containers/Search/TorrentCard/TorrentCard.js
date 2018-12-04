@@ -6,59 +6,53 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import SaveIcon from '@material-ui/icons/Save';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import classes from './TorrentCard.module.css';
+import Divider from "@material-ui/core/Divider/Divider";
 
-const styles = {
-    card: {
-        minWidth: '275px',
-    },
-    bullet: {
-        display: 'inline-block',
-        margin: '0 2px',
-        transform: 'scale(0.8)',
-    },
-    title: {
-        fontSize: 14,
-    },
-    pos: {
-        marginBottom: 12,
-    },
-};
+const TorrentCard = (props) => {
 
-function TorrentCard(props) {
-    const {classes} = props;
-    const bull = <span className={classes.bullet}>•</span>;
+    const onDownloadClick = () => window.open(props.magnetUri, '_self');
 
     return (
         <Card className={props.className}>
             <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    Word of the Day
+                <Typography variant="h6">{props.name}</Typography>
+
+                <Divider/>
+
+                <Typography className={classes.uploadedOn} color='textSecondary'>
+                    Uploaded On: {props.uploadedOn}
                 </Typography>
-                <Typography variant="h5" component="h2">
-                    be
-                    {bull}
-                    nev
-                    {bull}o{bull}
-                    lent
-                </Typography>
-                <Typography className={classes.pos} color="textSecondary">
-                    adjective
-                </Typography>
-                <Typography component="p">
-                    well meaning and kindly.
-                    <br/>
-                    {'"a benevolent smile"'}
-                </Typography>
+
+                <div className={classes.content}>
+                    <div className={classes.stat}>
+                        <SaveIcon/>
+                        <span>{props.size}</span>
+                    </div>
+                    <div className={classes.stat}>
+                        <ArrowUpwardIcon/>
+                        <span>{props.seeders}</span>
+                    </div>
+                    <div className={classes.stat}>
+                        <ArrowDownwardIcon/>
+                        <span>{props.leechers}</span>
+                    </div>
+                </div>
             </CardContent>
             <CardActions>
-                <Button size="small">Learn More</Button>
+                <Button
+                    onClick={onDownloadClick}
+                    size="small">Download</Button>
             </CardActions>
         </Card>
     );
-}
+};
 
 TorrentCard.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TorrentCard);
+export default TorrentCard;
