@@ -37,7 +37,7 @@ namespace Sweater.Api
                 .UseStartup<Startup>()
                 .UseKestrel(options =>
                 {
-                    options.Listen(IPAddress.Loopback, Port, listenOptions =>
+                    options.Listen(IPAddress.Any, Port, listenOptions =>
                     {
                         var certificateSettings = config.GetSection("certificateSettings");
 
