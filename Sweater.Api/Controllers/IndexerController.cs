@@ -31,7 +31,7 @@ namespace Sweater.Api.Controllers
         [HttpGet]
         [Route("[action]")]
         public async Task<IEnumerable<IndexerResult>> Query(
-            [FromBody] Query query
+            [FromQuery] Query query
         ) => await _queryService.Query(query);
     }
 }
