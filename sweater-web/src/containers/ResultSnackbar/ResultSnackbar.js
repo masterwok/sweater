@@ -1,7 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
-import {withStyles} from '@material-ui/core/styles';
 import SnackbarResultContent from "./SnackbarResultContent/SnackbarResultContent";
 
 
@@ -47,9 +45,5 @@ class ResultSnackbar extends React.Component {
         );
     }
 }
-
-ResultSnackbar.propTypes = {
-    // classes: PropTypes.object.isRequired,
-};
 
 export default ResultSnackbar;

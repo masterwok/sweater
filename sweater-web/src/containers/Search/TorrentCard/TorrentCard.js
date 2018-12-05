@@ -51,6 +51,12 @@ const TorrentCard = (props) => {
 };
 
 TorrentCard.propTypes = {
+    uploadedOn: PropTypes.string
+    , name: PropTypes.string
+    , magnetUri: PropTypes.string
+    , size: PropTypes.string
+    , seeders: PropTypes.number
+    , leechers: PropTypes.number
 };
 
 export default TorrentCard;
