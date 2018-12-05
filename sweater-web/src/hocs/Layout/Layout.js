@@ -3,6 +3,8 @@ import {withStyles} from '@material-ui/core/styles';
 import SearchAppBar from "./SearchAppBar/SearchAppBar";
 import Search from "../../containers/Search/Search";
 import ResultSnackbar from "../../containers/ResultSnackbar/ResultSnackbar";
+import Theme from "./Theme/Theme";
+import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 
 const baseEndpoint = `https://192.168.1.157:8080/api`;
 
@@ -43,7 +45,7 @@ class Layout extends Component {
         const {classes} = this.props;
 
         return (
-            <>
+            <MuiThemeProvider theme={Theme}>
                 <SearchAppBar
                     title={'Sweater'}
                     onSearch={this.onSearch}/>
@@ -57,7 +59,7 @@ class Layout extends Component {
                     onError={this.showError}/>
 
                 <ResultSnackbar ref={this.resultSnackbar}/>
-            </>
+            </MuiThemeProvider>
         );
     }
 }

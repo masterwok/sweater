@@ -86,6 +86,10 @@ class Search extends Component {
             return;
         }
 
+        this.setState({
+            torrents: []
+        });
+
         this.queryTorrents();
     }
 
