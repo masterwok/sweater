@@ -1,6 +1,6 @@
 {
   "certificateSettings": {
     "filename": "Certificates/https.pfx",
-    "password": "YourSecurePassword"
+    "password": "password"
   }
 }

@@ -14,7 +14,6 @@ using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
-using Sweater.Core.Indexers.Public;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
@@ -53,6 +52,9 @@ namespace Sweater.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Enable CORS globally
+            services.AddCors();
+
             services
                 .AddMvc(options =>
                 {
@@ -97,6 +99,7 @@ namespace Sweater.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(options => options.AllowAnyOrigin());
             app.UseMvc();
         }
     }
