@@ -12,6 +12,7 @@ const MobileMenu = (props) => (
         open={props.isOpen}
         onClose={props.onClose}>
 
+        <MenuItem onClick={props.onClose}>Settings</MenuItem>
         <MenuItem onClick={props.onClose}>Logout</MenuItem>
     </Menu>
 );
