@@ -5,10 +5,13 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sweater.Api.Filters;
+using Sweater.Api.Services;
 using Sweater.Core.Clients;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
@@ -52,10 +55,10 @@ namespace Sweater.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Enable CORS globally
-            services.AddCors();
-
             services
+                // CORS must be enabled before MVC
+                .AddCors()
+                .AddMemoryCache()
                 .AddMvc(options =>
                 {
                     // Controller filter attribute
@@ -68,7 +71,7 @@ namespace Sweater.Api
             services.AddScoped<CatchAllExceptionFilter>();
 
             // Services
-            services.AddTransient<IIndexerQueryService, IndexerQueryService>();
+            services.AddTransient<IIndexerQueryService, CachedIndexerQueryService>();
             services.AddSingleton(_queryConfig);
 
             // Clients

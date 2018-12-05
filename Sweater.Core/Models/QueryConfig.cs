@@ -1,5 +1,10 @@
 namespace Sweater.Core.Models
 {
+    /// <summary>
+    /// The application query configuration for IIndexerQueryService implementations.
+    /// This configuration is read from appsettings.json
+    /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class QueryConfig
     {
         /// <summary>
@@ -10,6 +15,6 @@ namespace Sweater.Core.Models
         /// <summary>
         /// How long in milliseconds to keep cached results.
         /// </summary>
-        public long CacheTimeoutMs { get; set; }
+        public long CacheTimeSpanMs { get; set; }
     }
 }
