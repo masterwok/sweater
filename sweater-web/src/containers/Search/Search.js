@@ -4,6 +4,7 @@ import {withStyles} from '@material-ui/core/styles';
 import ProgressBar from "../../hocs/Layout/ProgressBar/ProgressBar";
 import Infinite from 'react-infinite';
 import axios from 'axios';
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
 
 const styles = theme => ({
@@ -18,6 +19,13 @@ const styles = theme => ({
     torrentCard: {
         minWidth: '275px'
         , marginBottom: '16px'
+    },
+    progressContainer: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    progress: {
+        margin: '16px auto'
     }
 });
 
@@ -38,8 +46,6 @@ class Search extends Component {
         pageIndex
         , pageSize
     ) => {
-        console.log(`Loading next page: ${pageIndex}`);
-
         if (typeof this.tokenSource !== typeof undefined) {
             this.tokenSource.cancel();
         }
@@ -98,7 +104,7 @@ class Search extends Component {
             , pageCount: 1
         });
 
-        this.queryTorrents(0, 10);
+        this.queryTorrents(0, this.props.pageSize);
     }
 
     onInfiniteLoad = () => {
@@ -108,14 +114,19 @@ class Search extends Component {
             return;
         }
 
-        this.queryTorrents(this.state.pageIndex, 10);
+        this.queryTorrents(
+            this.state.pageIndex
+            , this.props.pageSize
+        );
     };
 
-    elementInfiniteLoad = () => {
-        return <div className="infinite-list-item">
-            Loading...
-        </div>;
-    };
+    elementInfiniteLoad = (classes) => (
+        this.state.isLoading
+        && this.state.pageIndex > 0
+        && <div className={classes.progressContainer}>
+            <CircularProgress className={classes.progress} color="secondary"/>
+        </div>
+    );
 
     render = () => {
         const {classes} = this.props;
@@ -131,7 +142,7 @@ class Search extends Component {
                         elementHeight={200}
                         infiniteLoadBeginEdgeOffset={200}
                         onInfiniteLoad={this.onInfiniteLoad}
-                        // loadingSpinnerDelegate={this.elementInfiniteLoad()}
+                        loadingSpinnerDelegate={this.elementInfiniteLoad(classes)}
                         isInfiniteLoading={this.state.isLoading}>
                         {this.state.torrents.map((torrent, index) => (
                             <TorrentCard

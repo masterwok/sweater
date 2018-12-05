@@ -6,7 +6,10 @@ import ResultSnackbar from "../../containers/ResultSnackbar/ResultSnackbar";
 import Theme from "./Theme/Theme";
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 
+// TODO: Move these to some configuration
 const baseEndpoint = `https://192.168.1.157:8080/api`;
+const pageSize = 10;
+const indexer = 'rarbg';
 
 const styles = theme => ({
     // Use this style to align content below fixed App Bar.
@@ -54,7 +57,8 @@ class Layout extends Component {
 
                 <Search
                     endpoint={`${baseEndpoint}/indexer/query`}
-                    indexer={'rarbg'}
+                    pageSize={pageSize}
+                    indexer={indexer}
                     query={this.state.query}
                     onError={this.showError}/>
 
