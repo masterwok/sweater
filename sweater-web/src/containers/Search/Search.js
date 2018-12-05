@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import TorrentCard from "./TorrentCard/TorrentCard";
 import {withStyles} from '@material-ui/core/styles';
 import ProgressBar from "../../hocs/Layout/ProgressBar/ProgressBar";
+import Infinite from 'react-infinite';
 import axios from 'axios';
 
 
@@ -24,25 +25,21 @@ class Search extends Component {
 
     state = {
         isLoading: false
+        , pageIndex: 0
+        , pageCount: 1
         , torrents: []
     };
-
-    reduceTorrents = (responseData) => responseData
-        .reduce((torrents, indexerResult) => torrents.concat(
-            indexerResult.torrents.map(t => ({
-                ...t
-                , indexer: indexerResult.indexer
-            })))
-            , []
-        )
-        // Sort descending (this will eventually be done server side)
-        .sort((a, b) => b.seeders - a.seeders);
 
     setLoadingState = (isLoading) => this.setState({
         isLoading: isLoading
     });
 
-    queryTorrents = () => {
+    queryTorrents = (
+        pageIndex
+        , pageSize
+    ) => {
+        console.log(`Loading next page: ${pageIndex}`);
+
         if (typeof this.tokenSource !== typeof undefined) {
             this.tokenSource.cancel();
         }
@@ -59,15 +56,24 @@ class Search extends Component {
                     , params: {
                         queryString: this.props.query
                         , indexer: this.props.indexer
+                        , pageIndex: pageIndex
+                        , pageSize: pageSize
                     }
                 }
             )
             .then(response => {
                 this.setLoadingState(false);
 
-                return this.setState({
-                    torrents: response.data.items
-                });
+                const data = response.data;
+
+                return this.setState(previousSate => ({
+                    torrents: [
+                        ...previousSate.torrents
+                        , ...data.items
+                    ]
+                    , pageIndex: previousSate.pageIndex + 1
+                    , pageCount: data.pageCount
+                }));
             })
             .catch(error => {
                 if (axios.isCancel(error)) {
@@ -88,10 +94,28 @@ class Search extends Component {
 
         this.setState({
             torrents: []
+            , pageIndex: 0
+            , pageCount: 1
         });
 
-        this.queryTorrents();
+        this.queryTorrents(0, 10);
     }
+
+    onInfiniteLoad = () => {
+        if (!this.props.query
+            || this.state.isLoading
+            || this.state.pageIndex >= this.state.pageCount) {
+            return;
+        }
+
+        this.queryTorrents(this.state.pageIndex, 10);
+    };
+
+    elementInfiniteLoad = () => {
+        return <div className="infinite-list-item">
+            Loading...
+        </div>;
+    };
 
     render = () => {
         const {classes} = this.props;
@@ -101,17 +125,26 @@ class Search extends Component {
                 <ProgressBar isLoading={this.state.isLoading}/>
 
                 <div className={classes.search}>
-                    {this.state.torrents.map((torrent, index) => (
-                        <TorrentCard
-                            key={index}
-                            className={classes.torrentCard}
-                            name={torrent.name}
-                            magnetUri={torrent.magnetUri}
-                            uploadedOn={torrent.uploadedOn}
-                            size={torrent.size}
-                            seeders={torrent.seeders}
-                            leechers={torrent.seeders}/>
-                    ))}
+
+                    <Infinite
+                        useWindowAsScrollContainer={true}
+                        elementHeight={200}
+                        infiniteLoadBeginEdgeOffset={200}
+                        onInfiniteLoad={this.onInfiniteLoad}
+                        // loadingSpinnerDelegate={this.elementInfiniteLoad()}
+                        isInfiniteLoading={this.state.isLoading}>
+                        {this.state.torrents.map((torrent, index) => (
+                            <TorrentCard
+                                key={index}
+                                className={classes.torrentCard}
+                                name={torrent.name}
+                                magnetUri={torrent.magnetUri}
+                                uploadedOn={torrent.uploadedOn}
+                                size={torrent.size}
+                                seeders={torrent.seeders}
+                                leechers={torrent.seeders}/>
+                        ))}
+                    </Infinite>
                 </div>
             </>
         );

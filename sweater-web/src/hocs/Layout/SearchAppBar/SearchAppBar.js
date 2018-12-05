@@ -89,7 +89,6 @@ class SearchAppBar extends React.Component {
                     onClose={this.onCloseMobileMenu}/>
             </>
         );
-        // </div>
     }
 }
 
