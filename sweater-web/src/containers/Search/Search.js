@@ -66,7 +66,7 @@ class Search extends Component {
                 this.setLoadingState(false);
 
                 return this.setState({
-                    torrents: this.reduceTorrents(response.data)
+                    torrents: response.data.items
                 });
             })
             .catch(error => {

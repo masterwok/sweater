@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Sweater.Api.Extensions;
+using Sweater.Api.Models;
+using Sweater.Core.Extensions;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 
@@ -26,12 +30,31 @@ namespace Sweater.Api.Controllers
         /// <summary>
         /// Query the indexers.
         /// </summary>
-        /// <param name="query">The query to pass to the indexers.</param>
-        /// <returns></returns>
+        /// <param name="query">The query.</param>
+        /// <param name="pageIndex">The page index to fetch (default: 0).</param>
+        /// <param name="pageSize">The maximum number of items per page (default: 10).</param>
+        /// <returns>A TorrentQueryResult instance.</returns>
         [HttpGet]
         [Route("[action]")]
-        public async Task<IEnumerable<IndexerResult>> Query(
+        public async Task<PaginatedResponse<TorrentQueryResult>> Query(
             [FromQuery] Query query
-        ) => await _queryService.Query(query);
+            , int pageIndex = 0
+            , int pageSize = 10
+        )
+        {
+            var results = await _queryService.Query(query);
+            var flattenedResults = results.FlattenIndexerResults();
+
+            return new PaginatedResponse<TorrentQueryResult>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                TotalItemCount = flattenedResults.Count,
+                Items = flattenedResults
+                    .Skip(pageIndex * pageSize)
+                    .Take(pageSize)
+                    .ToList()
+            };
+        }
     }
 }

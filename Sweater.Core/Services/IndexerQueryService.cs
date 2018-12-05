@@ -31,8 +31,9 @@ namespace Sweater.Core.Services
             _queryConfig = queryConfig;
         }
 
-        public Task<IEnumerable<string>> GetIndexerTags() =>
-            Task.FromResult(Enum.GetNames(typeof(Indexer)).AsEnumerable());
+        public Task<IList<string>> GetIndexerTags() => Task.FromResult(
+            (IList<string>) Enum.GetNames(typeof(Indexer)).ToList()
+        );
 
         private IEnumerable<IIndexer> GetIndexersForQuery(Indexer indexer)
             => indexer == Indexer.All
@@ -44,7 +45,7 @@ namespace Sweater.Core.Services
                 // Get single indexer instance
                 : new[] {_getIndexer(indexer)};
 
-        public async Task<IEnumerable<IndexerResult>> Query(Query query)
+        public async Task<IList<IndexerResult>> Query(Query query)
         {
             var indexers = GetIndexersForQuery(query.Indexer);
 

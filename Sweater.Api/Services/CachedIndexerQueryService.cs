@@ -39,10 +39,10 @@ namespace Sweater.Api.Services
             _memoryCache = memoryCache;
         }
 
-        public async Task<IEnumerable<string>> GetIndexerTags()
+        public async Task<IList<string>> GetIndexerTags()
             => await _queryService.GetIndexerTags();
 
-        public async Task<IEnumerable<IndexerResult>> Query(Query query)
+        public async Task<IList<IndexerResult>> Query(Query query)
         {
             if (!_queryConfig.IsCacheEnabled)
             {
