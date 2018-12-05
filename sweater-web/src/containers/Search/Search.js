@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import TorrentCard from "./TorrentCard/TorrentCard";
 import {withStyles} from '@material-ui/core/styles';
+import ProgressBar from "../../hocs/Layout/ProgressBar/ProgressBar";
+import axios from 'axios';
 
 
 const styles = theme => ({
     search: {
-        // margin: '16px 16px'
         padding: '16px'
         , maxWidth: '100%'
         , [theme.breakpoints.up('sm')]: {
@@ -22,44 +23,90 @@ const styles = theme => ({
 class Search extends Component {
 
     state = {
-        torrents: [
-            {
-                infoHash: 'derp'
-                , magnetUri: 'magnet:?xt=urn:btih:608c9e4070398f02757492cf3817783ee93fa32d&dn=Hackers+%281995%29+720p+BrRip+x264+-+YIFY&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.ccc.de%3A80'
-                , name: 'Hackers 1995'
-                , size: '500 MiB'
-                , seeders: 666
-                , leechers: 12
-                , uploadedOn: '09-14 2016'
-            },
-            {
-                infoHash: 'derp'
-                , magnetUri: 'magnet:?xt=urn:btih:608c9e4070398f02757492cf3817783ee93fa32d&dn=Hackers+%281995%29+720p+BrRip+x264+-+YIFY&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.ccc.de%3A80'
-                , name: 'Hackers 1995'
-                , size: '1.5 GiB'
-                , seeders: 666
-                , leechers: 12
-                , uploadedOn: '07-23 16:07'
-            }
-        ]
+        isLoading: false
+        , torrents: []
     };
+
+    reduceTorrents = (responseData) => responseData
+        .reduce((torrents, indexerResult) => torrents.concat(
+            indexerResult.torrents.map(t => ({
+                ...t
+                , indexer: indexerResult.indexer
+            })))
+            , []
+        )
+        // Sort descending (this will eventually be done server side)
+        .sort((a, b) => b.seeders - a.seeders);
+
+    setLoadingState = (isLoading) => this.setState({
+        isLoading: isLoading
+    });
+
+    queryTorrents = () => {
+        if (typeof this.tokenSource !== typeof undefined) {
+            this.tokenSource.cancel();
+        }
+
+        this.tokenSource = axios.CancelToken.source();
+
+        this.setLoadingState(true);
+
+        axios
+            .get(
+                this.props.endpoint
+                , {
+                    cancelToken: this.tokenSource.token
+                    , params: {
+                        queryString: this.props.query
+                        , indexer: this.props.indexer
+                    }
+                }
+            )
+            .then(response => {
+                this.setLoadingState(false);
+
+                return this.setState({
+                    torrents: this.reduceTorrents(response.data)
+                });
+            })
+            .catch(error => {
+                if (axios.isCancel(error)) {
+                    return;
+                }
+
+                this.setLoadingState(false);
+
+                return this.props.onError(`Query Failed: ${error.message}`);
+            });
+    };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // Prevent fetching the data multiple times.
+        if (this.props.query === prevProps.query) {
+            return;
+        }
+
+        this.queryTorrents();
+    }
 
     render = () => {
         const {classes} = this.props;
 
         return (
             <>
+                <ProgressBar isLoading={this.state.isLoading}/>
+
                 <div className={classes.search}>
-                    {this.state.torrents.map((t, i) => (
+                    {this.state.torrents.map((torrent, index) => (
                         <TorrentCard
-                            key={i}
+                            key={index}
                             className={classes.torrentCard}
-                            name={t.name}
-                            magnetUri={t.magnetUri}
-                            uploadedOn={t.uploadedOn}
-                            size={t.size}
-                            seeders={t.seeders}
-                            leechers={t.seeders}/>
+                            name={torrent.name}
+                            magnetUri={torrent.magnetUri}
+                            uploadedOn={torrent.uploadedOn}
+                            size={torrent.size}
+                            seeders={torrent.seeders}
+                            leechers={torrent.seeders}/>
                     ))}
                 </div>
             </>

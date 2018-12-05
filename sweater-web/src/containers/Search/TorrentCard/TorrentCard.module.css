@@ -21,3 +21,6 @@
     margin-left: 4px;
 }
 
+.name {
+    word-wrap: break-word;
+}

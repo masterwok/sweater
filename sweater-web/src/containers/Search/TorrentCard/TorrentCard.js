@@ -18,7 +18,7 @@ const TorrentCard = (props) => {
     return (
         <Card className={props.className}>
             <CardContent>
-                <Typography variant="h6">{props.name}</Typography>
+                <Typography className={classes.name} variant="h6">{props.name}</Typography>
 
                 <Divider/>
 

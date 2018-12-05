@@ -9,14 +9,14 @@ const styles = {
     },
 };
 
-function LinearIndeterminate(props) {
-    return (
-        <LinearProgress color="secondary"/>
-    );
-}
+const ProgressBar = (props) => {
+    return props.isLoading ?
+        <LinearProgress color="secondary" variant='query'/>
+        : null;
+};
 
-LinearIndeterminate.propTypes = {
+ProgressBar.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(LinearIndeterminate);
+export default withStyles(styles)(ProgressBar);

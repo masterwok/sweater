@@ -51,10 +51,6 @@ class SearchAppBar extends React.Component {
         this.setState({mobileMoreAnchorEl: null});
     };
 
-    onSearch = (query) => {
-        console.log(query);
-    };
-
     render() {
         const {anchorEl, mobileMoreAnchorEl} = this.state;
         const {classes} = this.props;
@@ -62,14 +58,16 @@ class SearchAppBar extends React.Component {
         const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
         return (
-            <div className={classes.root}>
-                <AppBar position="static">
+            <>
+                <AppBar
+                    className={classes.root}
+                    position={this.props.position}>
                     <Toolbar>
                         <Typography className={classes.title} variant="h6" color="inherit" noWrap>
                             {this.props.title}
                         </Typography>
 
-                        <SearchInput onSearch={this.onSearch}/>
+                        <SearchInput onSearch={this.props.onSearch}/>
 
                         <div className={classes.grow}/>
 
@@ -89,13 +87,15 @@ class SearchAppBar extends React.Component {
                     anchorEl={mobileMoreAnchorEl}
                     isOpen={isMobileMenuOpen}
                     onClose={this.onCloseMobileMenu}/>
-            </div>
+            </>
         );
+        // </div>
     }
 }
 
 SearchAppBar.propTypes = {
-    classes: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
+    , position: PropTypes.string
 };
 
 export default withStyles(styles)(SearchAppBar);
