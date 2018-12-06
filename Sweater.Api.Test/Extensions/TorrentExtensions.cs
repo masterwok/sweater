@@ -11,15 +11,14 @@ namespace Sweater.Api.Test.Extensions
     [TestFixture]
     public class TorrentExtensions
     {
-        private static readonly Fixture _fixture = new Fixture();
-
+        private static readonly Fixture Fixture = new Fixture();
 
         private static readonly List<Torrent> Torrents = new List<Torrent>
         {
-            _fixture.Create<Torrent>(),
-            _fixture.Create<Torrent>(),
-            _fixture.Create<Torrent>(),
-            _fixture.Create<Torrent>()
+            Fixture.Create<Torrent>(),
+            Fixture.Create<Torrent>(),
+            Fixture.Create<Torrent>(),
+            Fixture.Create<Torrent>()
         };
 
         private static readonly List<IndexerResult> IndexerResults = new List<IndexerResult>
