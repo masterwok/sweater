@@ -3,7 +3,7 @@ Sweater.Core/obj/
 Sweater.Core/bin/
 Sweater.Api/obj/
 Sweater.Api/bin/
-Sweater.Android/obj/
-Sweater.Android/bin/
+Sweater.Api.Test/obj/
+Sweater.Api.Test/bin/
 packages/
 output/
