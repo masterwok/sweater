@@ -63,7 +63,7 @@ namespace Sweater.Api
                 {
                     // Controller filter attribute
                     options.Filters.Add<CatchAllExceptionFilter>();
-                    options.Filters.Add<ValidModelStateFilterAttribute>();
+                    options.Filters.Add<ValidModelStateFilter>();
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
