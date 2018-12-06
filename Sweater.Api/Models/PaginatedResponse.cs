@@ -35,6 +35,17 @@ namespace Sweater.Api.Models
         /// <summary>
         /// The total number of pages for the provided page size.
         /// </summary>
-        public int PageCount => (TotalItemCount + PageSize - 1) / PageSize;
+        public int PageCount
+        {
+            get
+            {
+                if (PageSize == 0)
+                {
+                    return 0;
+                }
+
+                return (TotalItemCount + PageSize - 1) / PageSize;
+            }
+        }
     }
 }
