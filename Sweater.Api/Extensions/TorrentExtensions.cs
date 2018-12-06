@@ -18,7 +18,8 @@ namespace Sweater.Api.Extensions
         /// <returns>A flattened list of TorrentQueryResult instances.</returns>
         public static IList<TorrentQueryResult> FlattenIndexerResults(
             this IEnumerable<IndexerResult> indexerResults
-        ) => indexerResults.SelectMany(r => r.Torrents.Select(t => new TorrentQueryResult
+        ) => indexerResults
+            ?.SelectMany(r => r.Torrents.Select(t => new TorrentQueryResult
             {
                 Indexer = r.Indexer.ToString(),
                 MagnetUri = t.MagnetUri,
