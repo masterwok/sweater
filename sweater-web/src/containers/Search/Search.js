@@ -5,6 +5,7 @@ import ProgressBar from "../../hocs/Layout/ProgressBar/ProgressBar";
 import Infinite from 'react-infinite';
 import axios from 'axios';
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import Typography from "@material-ui/core/Typography/Typography";
 
 
 const styles = theme => ({
@@ -26,6 +27,9 @@ const styles = theme => ({
     },
     progress: {
         margin: '16px auto'
+    },
+    totalItemCount: {
+        marginBottom: '16px'
     }
 });
 
@@ -35,6 +39,7 @@ class Search extends Component {
         isLoading: false
         , pageIndex: 0
         , pageCount: 1
+        , totalItemCount: -1
         , torrents: []
     };
 
@@ -79,6 +84,7 @@ class Search extends Component {
                     ]
                     , pageIndex: previousSate.pageIndex + 1
                     , pageCount: data.pageCount
+                    , totalItemCount: data.totalItemCount
                 }));
             })
             .catch(error => {
@@ -102,6 +108,7 @@ class Search extends Component {
             torrents: []
             , pageIndex: 0
             , pageCount: 1
+            , totalItemCount: -1
         });
 
         this.queryTorrents(0, this.props.pageSize);
@@ -136,6 +143,11 @@ class Search extends Component {
                 <ProgressBar isLoading={this.state.isLoading}/>
 
                 <div className={classes.search}>
+                    {this.state.totalItemCount > 0 ? <Typography
+                        className={classes.totalItemCount}
+                        color='textSecondary'>
+                        Total Results: {this.state.totalItemCount}
+                    </Typography>: null}
 
                     <Infinite
                         useWindowAsScrollContainer={true}

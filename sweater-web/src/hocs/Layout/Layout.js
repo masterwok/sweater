@@ -9,7 +9,7 @@ import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 // TODO: Move these to some configuration
 const baseEndpoint = `https://192.168.1.157:8080/api`;
 const pageSize = 10;
-const indexer = 'rarbg';
+const indexer = 'all';
 
 const styles = theme => ({
     // Use this style to align content below fixed App Bar.
