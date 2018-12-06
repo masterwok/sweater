@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using Moq;
 using NUnit.Framework;
 using Sweater.Core.Constants;
@@ -15,24 +16,26 @@ namespace Sweater.Api.Test.Controllers
         private Mock<IIndexerQueryService> _queryService;
         private Api.Controllers.IndexerController _indexerController;
 
+        private static readonly Fixture Fixture = new Fixture();
+
         private static readonly List<string> Tags = new List<string>
         {
-            "hack",
-            "the",
-            "planet!!"
+            Fixture.Create<string>(),
+            Fixture.Create<string>(),
+            Fixture.Create<string>()
         };
 
         private static readonly Query Query = new Query
         {
-            Indexer = Indexer.All,
-            QueryString = "Hackers 1995"
+            Indexer = Fixture.Create<Indexer>(),
+            QueryString = Fixture.Create<string>()
         };
 
         private static readonly List<Torrent> Torrents = new List<Torrent>
         {
-            new Torrent {Name = "A"},
-            new Torrent {Name = "B"},
-            new Torrent {Name = "C"}
+            new Torrent {Name = Fixture.Create<string>()},
+            new Torrent {Name = Fixture.Create<string>()},
+            new Torrent {Name = Fixture.Create<string>()}
         };
 
         private static readonly List<IndexerResult> IndexerResults = new List<IndexerResult>
