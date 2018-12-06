@@ -80,23 +80,41 @@ namespace Sweater.Api.Test.Controllers
         [Test]
         public async Task Query_Returns_Correct_Page_Index_In_Result()
         {
-            var result = await _indexerController.Query(Query, 666, 1000);
+            var pageIndex = Fixture.Create<int>();
+            var pageSize = Fixture.Create<int>();
 
-            Assert.AreEqual(666, result.PageIndex);
+            var result = await _indexerController.Query(
+                Query
+                , pageIndex
+                , pageSize
+            );
+
+            Assert.AreEqual(pageIndex, result.PageIndex);
         }
 
         [Test]
         public async Task Query_Returns_Correct_Page_Size_In_Result()
         {
-            var result = await _indexerController.Query(Query, 666, 1000);
+            var pageIndex = Fixture.Create<int>();
+            var pageSize = Fixture.Create<int>();
 
-            Assert.AreEqual(1000, result.PageSize);
+            var result = await _indexerController.Query(
+                Query
+                , pageIndex
+                , pageSize
+            );
+
+            Assert.AreEqual(pageSize, result.PageSize);
         }
 
         [Test]
         public async Task Query_Returns_Correct_TotalItemCount_In_Result()
         {
-            var result = await _indexerController.Query(Query);
+            var result = await _indexerController.Query(
+                Query
+                , Fixture.Create<int>()
+                , Fixture.Create<int>()
+            );
 
             Assert.AreEqual(IndexerResults.Count * Torrents.Count, result.TotalItemCount);
         }
