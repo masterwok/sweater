@@ -8,6 +8,7 @@ using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Public.Rarbg.Models;
 using Sweater.Core.Models;
+using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Core.Indexers.Public.Rarbg
 {
