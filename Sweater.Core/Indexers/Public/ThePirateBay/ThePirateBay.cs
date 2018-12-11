@@ -14,7 +14,7 @@ using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
-    public class ThePirateBay : BaseIndexer<Settings>
+    public class ThePirateBay : BaseIndexer
     {
         public static readonly string ConfigName = Indexer.ThePirateBay.ToString();
 

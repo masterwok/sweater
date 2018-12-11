@@ -19,7 +19,7 @@ namespace Sweater.Core.Indexers
     /// Configure(..) is invoked when initializing the indexer. One strategy would be to allow the
     /// IoC container to take care of this.
     /// </summary>
-    public abstract class BaseIndexer<T> : IIndexer
+    public abstract class BaseIndexer : IIndexer
     {
         /// <summary>
         /// A unique indexer tag.

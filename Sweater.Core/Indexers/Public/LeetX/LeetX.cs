@@ -12,7 +12,7 @@ using Sweater.Core.Models;
 
 namespace Sweater.Core.Indexers.Public.LeetX
 {
-    public class LeetX : BaseIndexer<Settings>
+    public class LeetX : BaseIndexer
     {
         public static readonly string ConfigName = Indexer.LeetX.ToString();
 
