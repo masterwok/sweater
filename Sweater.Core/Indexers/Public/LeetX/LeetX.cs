@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -15,6 +14,8 @@ namespace Sweater.Core.Indexers.Public.LeetX
 {
     public class LeetX : BaseIndexer<Settings>
     {
+        public static readonly string ConfigName = Indexer.LeetX.ToString();
+
         private const string PaginationXPath = "/html/body/main/div/div/div/div[3]/div[2]/ul/li";
         private const string TorrentRowXPath = "/html/body/main/div/div/div/div[3]/div[1]/table/tbody/tr";
         private const string MagnetXPath = "/html/body/main/div/div/div/div[2]/div[1]/ul[1]/li[1]/a";
@@ -24,19 +25,14 @@ namespace Sweater.Core.Indexers.Public.LeetX
         private const string UploadedOnXPath = "td[4]";
         private const string SizeXPath = "td[5]";
 
-        public override string Tag => Indexer.LeetX.ToString();
+        public override string Tag => ConfigName;
 
-        private Settings _settings;
+        private readonly Settings _settings;
 
-        public LeetX(IHttpClient httpClient) : base(httpClient)
-            => Expression.Empty();
-
-        public override BaseIndexer<Settings> Configure(Settings model)
-        {
-            _settings = model;
-
-            return this;
-        }
+        public LeetX(
+            IHttpClient httpClient
+            , Settings settings
+        ) : base(httpClient) => _settings = settings;
 
         public override Task Login() => Task.FromResult(0);
 

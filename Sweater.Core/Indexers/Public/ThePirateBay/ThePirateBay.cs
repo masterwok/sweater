@@ -16,6 +16,8 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
     public class ThePirateBay : BaseIndexer<Settings>
     {
+        public static readonly string ConfigName = Indexer.ThePirateBay.ToString();
+
         private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
         private static readonly string TorrentNameXPath = "td[2]/div/a";
         private static readonly string MagnetUriXPath = "td[2]/a[1]";
@@ -26,20 +28,18 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
 
         private readonly ILogService<ThePirateBay> _logger;
 
-        private Settings _settings;
+        private readonly Settings _settings;
 
-        public override string Tag => Indexer.ThePirateBay.ToString();
+        public override string Tag => ConfigName;
 
         public ThePirateBay(
             IHttpClient httpClient
             , ILogService<ThePirateBay> logger
-        ) : base(httpClient) => _logger = logger;
-
-        public override BaseIndexer<Settings> Configure(Settings model)
+            , Settings settings
+        ) : base(httpClient)
         {
-            _settings = model;
-
-            return this;
+            _logger = logger;
+            _settings = settings;
         }
 
         public override Task Login() => Task.FromResult(true);

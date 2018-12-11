@@ -38,13 +38,6 @@ namespace Sweater.Core.Indexers
         protected BaseIndexer(IHttpClient httpClient) => HttpClient = httpClient;
 
         /// <summary>
-        /// Configure the indexer.
-        /// </summary>
-        /// <param name="model">Indexer configuration model.</param>
-        /// <returns>The instance of the indexer.</returns>
-        public abstract BaseIndexer<T> Configure(T model);
-
-        /// <summary>
         /// An asynchronous method for authenticating with the indexer. This is the first method
         /// invoked in the query workflow.
         /// </summary>

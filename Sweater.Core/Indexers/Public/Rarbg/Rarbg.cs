@@ -18,27 +18,27 @@ namespace Sweater.Core.Indexers.Public.Rarbg
     /// </summary>
     public class Rarbg : BaseIndexer<Settings>
     {
+        public static readonly string ConfigName = Indexer.Rarbg.ToString();
+
         // Request rate limiting is set to 1 request / 2 seconds.
         private static readonly int RequestDelayMs = 2100;
 
-        private Settings _settings;
+        private readonly Settings _settings;
 
-        public Rarbg(IHttpClient httpClient) : base(httpClient)
+        public Rarbg(
+            IHttpClient httpClient
+            , Settings settings
+        ) : base(httpClient)
         {
+            _settings = settings;
+
             // Torrent API requires a browser user-agent.
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
         private string ApiEndpoint => $"{_settings.BaseUrl}/pubapi_v2.php";
 
-        public override string Tag => Indexer.Rarbg.ToString();
-
-        public override BaseIndexer<Settings> Configure(Settings model)
-        {
-            _settings = model;
-
-            return this;
-        }
+        public override string Tag => ConfigName;
 
         public override Task Login() => Task.FromResult(0);
 
