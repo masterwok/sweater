@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Sweater.Core.Clients;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
@@ -21,7 +19,7 @@ namespace Sweater.Core.Indexers
     /// Configure(..) is invoked when initializing the indexer. One strategy would be to allow the
     /// IoC container to take care of this.
     /// </summary>
-    public abstract class BaseIndexer : IIndexer
+    public abstract class BaseIndexer<T> : IIndexer
     {
         /// <summary>
         /// A unique indexer tag.
@@ -42,12 +40,9 @@ namespace Sweater.Core.Indexers
         /// <summary>
         /// Configure the indexer.
         /// </summary>
-        /// <param name="configuration">
-        /// An IConfiguration instance representing the configuration model defined within the indexer.
-        /// Generally these configurations are stored within a json file (indexers.json).
-        /// </param>
+        /// <param name="model">Indexer configuration model.</param>
         /// <returns>The instance of the indexer.</returns>
-        public abstract BaseIndexer Configure(IConfiguration configuration);
+        public abstract BaseIndexer<T> Configure(T model);
 
         /// <summary>
         /// An asynchronous method for authenticating with the indexer. This is the first method

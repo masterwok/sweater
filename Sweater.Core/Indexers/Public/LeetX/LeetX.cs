@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Configuration;
-using Sweater.Core.Clients;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -15,7 +13,7 @@ using Sweater.Core.Models;
 
 namespace Sweater.Core.Indexers.Public.LeetX
 {
-    public class LeetX : BaseIndexer
+    public class LeetX : BaseIndexer<Settings>
     {
         private const string PaginationXPath = "/html/body/main/div/div/div/div[3]/div[2]/ul/li";
         private const string TorrentRowXPath = "/html/body/main/div/div/div/div[3]/div[1]/table/tbody/tr";
@@ -33,9 +31,9 @@ namespace Sweater.Core.Indexers.Public.LeetX
         public LeetX(IHttpClient httpClient) : base(httpClient)
             => Expression.Empty();
 
-        public override BaseIndexer Configure(IConfiguration configuration)
+        public override BaseIndexer<Settings> Configure(Settings model)
         {
-            _settings = configuration.Get<Settings>();
+            _settings = model;
 
             return this;
         }

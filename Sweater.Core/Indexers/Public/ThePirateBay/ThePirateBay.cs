@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Configuration;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -15,7 +14,7 @@ using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
-    public class ThePirateBay : BaseIndexer
+    public class ThePirateBay : BaseIndexer<Settings>
     {
         private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
         private static readonly string TorrentNameXPath = "td[2]/div/a";
@@ -36,9 +35,9 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             , ILogService<ThePirateBay> logger
         ) : base(httpClient) => _logger = logger;
 
-        public override BaseIndexer Configure(IConfiguration configuration)
+        public override BaseIndexer<Settings> Configure(Settings model)
         {
-            _settings = configuration.Get<Settings>();
+            _settings = model;
 
             return this;
         }

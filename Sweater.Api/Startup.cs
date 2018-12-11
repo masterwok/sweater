@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Sweater.Api.Factories;
 using Sweater.Api.Filters;
 using Sweater.Api.Services;
 using Sweater.Core.Clients;
@@ -19,6 +20,7 @@ using Sweater.Core.Indexers;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
+using Sweater.Core.Indexers.Public.Rarbg.Models;
 using Sweater.Core.Indexers.Public.ThePirateBay;
 using Sweater.Core.Models;
 using Sweater.Core.Services;
@@ -36,18 +38,6 @@ namespace Sweater.Api
         {
             _queryConfig = configuration.GetSection("queryConfig").Get<QueryConfig>();
             _indexerConfigSection = configuration.GetSection("indexers");
-        }
-
-        private static BaseIndexer GetIndexerInstance(IServiceProvider serviceProvider, Indexer indexer)
-        {
-            switch (indexer)
-            {
-                case Indexer.ThePirateBay: return serviceProvider.GetService<ThePirateBay>();
-                case Indexer.LeetX: return serviceProvider.GetService<LeetX>();
-                case Indexer.Rarbg: return serviceProvider.GetService<Rarbg>();
-                case Indexer.All: throw new InvalidEnumArgumentException("All indexer has no class to instantiate.");
-                default: throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
-            }
         }
 
         /// <summary>
@@ -84,10 +74,12 @@ namespace Sweater.Api
             services.AddTransient<Rarbg>();
 
             // Indexer factory
-            services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>
-                GetIndexerInstance(serviceProvider, indexer)
-                    .Configure(_indexerConfigSection.GetSection(indexer.ToString()))
-            );
+            services.AddTransient<Func<Indexer, IIndexer>>(
+                serviceProvider => indexer => IndexerFactory.Create(
+                    serviceProvider
+                    , _indexerConfigSection
+                    , indexer
+                ));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

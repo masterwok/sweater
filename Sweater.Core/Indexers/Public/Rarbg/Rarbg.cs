@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
@@ -17,7 +16,7 @@ namespace Sweater.Core.Indexers.Public.Rarbg
     /// This Rarbg indexer uses the torrent Restful API provided by Rarbg. Documentation surrounding
     /// the API can be found at: https://torrentapi.org/apidocs_v2.txt
     /// </summary>
-    public class Rarbg : BaseIndexer
+    public class Rarbg : BaseIndexer<Settings>
     {
         // Request rate limiting is set to 1 request / 2 seconds.
         private static readonly int RequestDelayMs = 2100;
@@ -34,9 +33,9 @@ namespace Sweater.Core.Indexers.Public.Rarbg
 
         public override string Tag => Indexer.Rarbg.ToString();
 
-        public override BaseIndexer Configure(IConfiguration configuration)
+        public override BaseIndexer<Settings> Configure(Settings model)
         {
-            _settings = configuration.Get<Settings>();
+            _settings = model;
 
             return this;
         }
