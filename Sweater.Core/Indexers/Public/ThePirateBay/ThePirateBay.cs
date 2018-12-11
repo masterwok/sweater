@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Sweater.Core.Clients;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Public.ThePirateBay.Models;
 using Sweater.Core.Models;
+using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
@@ -26,7 +25,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         private static readonly string DetailsXpath = "td[2]/font";
         private static readonly Regex InfoTextRegex = new Regex(@"Uploaded\s*([\d\W]*),\s*Size\s*(.*),");
 
-        private readonly ILogger<ThePirateBay> _logger;
+        private readonly ILogService<ThePirateBay> _logger;
 
         private Settings _settings;
 
@@ -34,7 +33,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
 
         public ThePirateBay(
             IHttpClient httpClient
-            , ILogger<ThePirateBay> logger
+            , ILogService<ThePirateBay> logger
         ) : base(httpClient) => _logger = logger;
 
         public override BaseIndexer Configure(IConfiguration configuration)

@@ -71,6 +71,7 @@ namespace Sweater.Api
             services.AddScoped<CatchAllExceptionFilter>();
 
             // Services
+            services.AddSingleton(typeof(ILogService<>), typeof(LogService<>));
             services.AddTransient<IIndexerQueryService, CachedIndexerQueryService>();
             services.AddSingleton(_queryConfig);
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
@@ -16,12 +15,12 @@ namespace Sweater.Core.Services
     /// </summary>
     public class IndexerQueryService : IIndexerQueryService
     {
-        private readonly ILogger<IndexerQueryService> _logger;
+        private readonly ILogService<IndexerQueryService> _logger;
         private readonly Func<Indexer, IIndexer> _getIndexer;
         private readonly QueryConfig _queryConfig;
 
         public IndexerQueryService(
-            ILogger<IndexerQueryService> logger
+            ILogService<IndexerQueryService> logger
             , Func<Indexer, IIndexer> getIndexer
             , QueryConfig queryConfig
         )
@@ -74,7 +73,10 @@ namespace Sweater.Core.Services
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"{indexer} threw an exception during execution.");
+                _logger.LogError(
+                    $"{indexer} threw an exception during execution."
+                    , exception
+                );
             }
 
             return result;

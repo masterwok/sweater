@@ -23,7 +23,7 @@ namespace Sweater.Api.Services
         private readonly IMemoryCache _memoryCache;
 
         public CachedIndexerQueryService(
-            ILogger<IndexerQueryService> logger
+            ILogService<IndexerQueryService> logger
             , Func<Indexer, IIndexer> getIndexer
             , QueryConfig queryConfig
             , IMemoryCache memoryCache
