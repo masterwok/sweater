@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Sweater.Api.Models;
 using Sweater.Core.Constants;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
@@ -42,7 +43,7 @@ namespace Sweater.Api.Services
         public async Task<IList<string>> GetIndexerTags()
             => await _queryService.GetIndexerTags();
 
-        public async Task<IList<IndexerResult>> Query(Query query)
+        public async Task<IList<TorrentQueryResult>> Query(Query query)
         {
             if (!_queryConfig.IsCacheEnabled)
             {

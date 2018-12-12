@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using NUnit.Framework;
-using Sweater.Api.Extensions;
 using Sweater.Core.Constants;
+using Sweater.Core.Extensions;
 using Sweater.Core.Models;
 
 namespace Sweater.Api.Test.Extensions
@@ -13,9 +13,8 @@ namespace Sweater.Api.Test.Extensions
     {
         private static readonly Fixture Fixture = new Fixture();
 
-        private static readonly List<Torrent> Torrents = new List<Torrent>
+        private static IEnumerable<Torrent> GetTorrents() => new List<Torrent>()
         {
-            Fixture.Create<Torrent>(),
             Fixture.Create<Torrent>(),
             Fixture.Create<Torrent>(),
             Fixture.Create<Torrent>()
@@ -23,9 +22,9 @@ namespace Sweater.Api.Test.Extensions
 
         private static readonly List<IndexerResult> IndexerResults = new List<IndexerResult>
         {
-            new IndexerResult {Indexer = Indexer.Rarbg.ToString(), Torrents = Torrents},
-            new IndexerResult {Indexer = Indexer.LeetX.ToString(), Torrents = Torrents},
-            new IndexerResult {Indexer = Indexer.ThePirateBay.ToString(), Torrents = Torrents}
+            new IndexerResult {Indexer = Indexer.Rarbg.ToString(), Torrents = GetTorrents()},
+            new IndexerResult {Indexer = Indexer.LeetX.ToString(), Torrents = GetTorrents()},
+            new IndexerResult { Indexer = Indexer.ThePirateBay.ToString(), Torrents = GetTorrents() }
         };
 
         [Test]
@@ -56,7 +55,7 @@ namespace Sweater.Api.Test.Extensions
             foreach (var indexerResult in IndexerResults)
             {
                 Assert.AreEqual(
-                    Torrents.Count
+                    GetTorrents().Count()
                     , torrents.Count(t => t.Indexer == indexerResult.Indexer.ToString())
                 );
             }

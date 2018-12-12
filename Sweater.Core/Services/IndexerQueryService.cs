@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sweater.Api.Models;
 using Sweater.Core.Constants;
+using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
@@ -44,13 +46,15 @@ namespace Sweater.Core.Services
                 // Get single indexer instance
                 : new[] {_getIndexer(indexer)};
 
-        public async Task<IList<IndexerResult>> Query(Query query)
+        public async Task<IList<TorrentQueryResult>> Query(Query query)
         {
             var indexers = GetIndexersForQuery(query.Indexer);
 
-            return await Task.WhenAll(indexers.Select(
+            var indexerResults = await Task.WhenAll(indexers.Select(
                 indexer => QueryIndexer(indexer, query)
             ));
+
+            return indexerResults.FlattenIndexerResults();
         }
 
         private async Task<IndexerResult> QueryIndexer(

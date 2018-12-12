@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Sweater.Api.Extensions;
 using Sweater.Api.Models;
-using Sweater.Core.Extensions;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 
@@ -43,14 +41,13 @@ namespace Sweater.Api.Controllers
         )
         {
             var results = await _queryService.Query(query);
-            var flattenedResults = results.FlattenIndexerResults();
 
             return new PaginatedResponse<TorrentQueryResult>
             {
                 PageIndex = pageIndex,
                 PageSize = pageSize,
-                TotalItemCount = flattenedResults.Count,
-                Items = flattenedResults
+                TotalItemCount = results.Count,
+                Items = results
                     .Skip(pageIndex * pageSize)
                     .Take(pageSize)
                     .ToList()

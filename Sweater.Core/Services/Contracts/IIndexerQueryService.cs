@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sweater.Api.Models;
 using Sweater.Core.Models;
 
 namespace Sweater.Core.Services.Contracts
@@ -8,6 +9,6 @@ namespace Sweater.Core.Services.Contracts
     {
         Task<IList<string>> GetIndexerTags();
 
-        Task<IList<IndexerResult>> Query(Query query);
+        Task<IList<TorrentQueryResult>> Query(Query query);
     }
 }

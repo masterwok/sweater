@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Moq;
 using NUnit.Framework;
+using Sweater.Api.Models;
 using Sweater.Core.Constants;
+using Sweater.Core.Extensions;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 
@@ -31,19 +33,22 @@ namespace Sweater.Api.Test.Controllers
             QueryString = Fixture.Create<string>()
         };
 
-        private static readonly List<Torrent> Torrents = new List<Torrent>
+        private static IEnumerable<Torrent> GetTorrents() => new List<Torrent>
         {
-            new Torrent {Name = Fixture.Create<string>()},
-            new Torrent {Name = Fixture.Create<string>()},
-            new Torrent {Name = Fixture.Create<string>()}
+            Fixture.Create<Torrent>(),
+            Fixture.Create<Torrent>(),
+            Fixture.Create<Torrent>()
         };
 
         private static readonly List<IndexerResult> IndexerResults = new List<IndexerResult>
         {
-            new IndexerResult {Indexer = Indexer.Rarbg.ToString(), Torrents = Torrents},
-            new IndexerResult {Indexer = Indexer.LeetX.ToString(), Torrents = Torrents},
-            new IndexerResult {Indexer = Indexer.ThePirateBay.ToString(), Torrents = Torrents}
+            new IndexerResult {Indexer = Indexer.Rarbg.ToString(), Torrents = GetTorrents()},
+            new IndexerResult {Indexer = Indexer.LeetX.ToString(), Torrents = GetTorrents()},
+            new IndexerResult {Indexer = Indexer.ThePirateBay.ToString(), Torrents = GetTorrents()}
         };
+
+        private static readonly IList<TorrentQueryResult> QueryResults
+            = IndexerResults.FlattenIndexerResults();
 
         [SetUp]
         public void Setup()
@@ -56,7 +61,7 @@ namespace Sweater.Api.Test.Controllers
 
             _queryService
                 .Setup(s => s.Query(It.IsAny<Query>()))
-                .ReturnsAsync(IndexerResults);
+                .ReturnsAsync(QueryResults);
 
             _indexerController = new Api.Controllers.IndexerController(_queryService.Object);
         }
@@ -116,7 +121,7 @@ namespace Sweater.Api.Test.Controllers
                 , Fixture.Create<int>()
             );
 
-            Assert.AreEqual(IndexerResults.Count * Torrents.Count, result.TotalItemCount);
+            Assert.AreEqual(IndexerResults.Count * GetTorrents().Count(), result.TotalItemCount);
         }
 
         [Test]
@@ -125,17 +130,6 @@ namespace Sweater.Api.Test.Controllers
             var result = await _indexerController.Query(Query, 1, 2);
 
             Assert.AreEqual(2, result.Items.Count);
-        }
-
-        [Test]
-        public async Task Query_Paginates_Items_As_Expected()
-        {
-            for (var i = 0; i < Torrents.Count; i++)
-            {
-                var result = await _indexerController.Query(Query, i, 1);
-
-                Assert.AreEqual(result.Items.First().Name, Torrents[i].Name);
-            }
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using Sweater.Api.Models;
 using Sweater.Core.Models;
 
-namespace Sweater.Api.Extensions
+namespace Sweater.Core.Extensions
 {
     /// <summary>
     /// This class contains a collection of extension methods for IndexerResult.
@@ -29,6 +29,8 @@ namespace Sweater.Api.Extensions
                 Leechers = t.Leechers,
                 UploadedOn = t.UploadedOn
             }))
+            .DistinctBy(t => t.MagnetUri)
+            .OrderByDescending(t => t.Seeders)
             .ToList();
     }
 }
