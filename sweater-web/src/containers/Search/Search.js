@@ -66,7 +66,8 @@ class Search extends Component {
                     cancelToken: this.tokenSource.token
                     , params: {
                         queryString: this.props.query
-                        , indexer: this.props.indexer
+                        // TODO: Need to actually pass indexers here..
+                        //, indexer: this.props.indexer
                         , pageIndex: pageIndex
                         , pageSize: pageSize
                     }
