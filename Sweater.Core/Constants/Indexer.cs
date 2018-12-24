@@ -1,3 +1,8 @@
+using Sweater.Core.Attributes;
+using Sweater.Core.Indexers.Public.LeetX;
+using Sweater.Core.Indexers.Public.Rarbg;
+using Sweater.Core.Indexers.Public.ThePirateBay;
+
 namespace Sweater.Core.Constants
 {
     /// <summary>
@@ -5,9 +10,10 @@ namespace Sweater.Core.Constants
     /// </summary>
     public enum Indexer
     {
+        // TODO: Consider removing "All" value 
         All,
-        ThePirateBay,
-        LeetX,
-        Rarbg
+        [Type(typeof(ThePirateBay))] ThePirateBay,
+        [Type(typeof(LeetX))] LeetX,
+        [Type(typeof(Rarbg))] Rarbg
     }
 }

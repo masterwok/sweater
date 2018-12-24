@@ -36,25 +36,36 @@ namespace Sweater.Core.Services
             (IList<string>) Enum.GetNames(typeof(Indexer)).ToList()
         );
 
-        private IEnumerable<IIndexer> GetIndexersForQuery(Indexer indexer)
-            => indexer == Indexer.All
-                // Get all indexer instances
-                ? Enum.GetValues(typeof(Indexer))
-                    .Cast<Indexer>()
-                    .Where(i => i != Indexer.All)
-                    .Select(_getIndexer)
-                // Get single indexer instance
-                : new[] {_getIndexer(indexer)};
+        private IEnumerable<IIndexer> GetIndexersForQuery(
+            IEnumerable<Indexer> requestedIndexers
+        )
+        {
+            var indexerValues = Enum
+                .GetValues(typeof(Indexer))
+                .Cast<Indexer>()
+                .Where(i => i != Indexer.All);
+
+            // All indexers requested
+            if (requestedIndexers.Contains(Indexer.All))
+            {
+                return indexerValues.Select(_getIndexer);
+            }
+
+            // Subset of indexers requested
+            return indexerValues
+                .Where(requestedIndexers.Contains)
+                .Select(_getIndexer);
+        }
 
         public async Task<IList<TorrentQueryResult>> Query(Query query)
         {
-            var indexers = GetIndexersForQuery(query.Indexer);
+            var indexers = GetIndexersForQuery(query.Indexers);
 
             var indexerResults = await Task.WhenAll(indexers.Select(
                 indexer => QueryIndexer(indexer, query)
             ));
 
-            return indexerResults.FlattenIndexerResults();
+            return indexerResults.FlattenIndexerResults().ToList();
         }
 
         private async Task<IndexerResult> QueryIndexer(

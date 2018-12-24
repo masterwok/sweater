@@ -23,7 +23,7 @@ const styles = theme => ({
         backgroundColor: green[600],
     },
     error: {
-        backgroundColor: theme.palette.error.dark,
+        backgroundColor: theme.palette.error.dark
     },
     info: {
         backgroundColor: theme.palette.primary.dark,

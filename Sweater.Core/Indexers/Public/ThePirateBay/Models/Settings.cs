@@ -8,5 +8,6 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay.Models
     {
         public string BaseUrl { get; set; }
         public int MaxPages { get; set; }
+        public bool IsEnabled { get; set; }
     }
 }

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Sweater.Core.Attributes;
 using Sweater.Core.Constants;
 
@@ -12,11 +14,16 @@ namespace Sweater.Core.Models
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     public class Query
     {
-        [ValidEnum] public Indexer Indexer { get; set; } = Indexer.All;
+        public Indexer[] Indexers { get; set; } = {Indexer.All};
 
         public string QueryString { get; set; }
 
-        public override string ToString() => $"Indexer Tag = {Indexer}, " +
+        public override string ToString() => $"Indexer Tag = {IndexersString}, " +
                                              $"Query String = {QueryString}";
+
+        private string IndexersString => string.Join(
+            ", "
+            , Indexers.Select(i => i.ToString())
+        );
     }
 }

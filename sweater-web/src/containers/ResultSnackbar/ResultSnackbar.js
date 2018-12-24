@@ -18,7 +18,6 @@ class ResultSnackbar extends React.Component {
         });
     };
 
-
     handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
