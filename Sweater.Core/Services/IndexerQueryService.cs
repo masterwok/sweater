@@ -42,11 +42,10 @@ namespace Sweater.Core.Services
         {
             var indexerValues = Enum
                 .GetValues(typeof(Indexer))
-                .Cast<Indexer>()
-                .Where(i => i != Indexer.All);
+                .Cast<Indexer>();
 
-            // All indexers requested
-            if (requestedIndexers.Contains(Indexer.All))
+            // No indexers provided, use all indexers.
+            if (!requestedIndexers.Any())
             {
                 return indexerValues.Select(_getIndexer);
             }
@@ -82,7 +81,8 @@ namespace Sweater.Core.Services
             {
                 await indexer.Login();
 
-                result.Torrents = await indexer.Query(query);
+                result.Torrents = (await indexer.Query(query))
+                    ?.Where(t => t != null);
 
                 await indexer.Logout();
             }

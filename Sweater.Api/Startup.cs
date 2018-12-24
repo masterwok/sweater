@@ -9,9 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sweater.Api.Filters;
 using Sweater.Api.Services;
+using Sweater.Core.Attributes;
 using Sweater.Core.Clients;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
+using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
@@ -81,21 +83,19 @@ namespace Sweater.Api
                 .Get<Core.Indexers.Public.ThePirateBay.Models.Settings>());
 
             // Indexer factory
-            services.AddTransient<Func<Indexer, IIndexer>>(
-                serviceProvider => indexer =>
+            services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>
+            {
+                try
                 {
-                    switch (indexer)
-                    {
-                        case Indexer.ThePirateBay:
-                            return serviceProvider.GetService<ThePirateBay>();
-                        case Indexer.LeetX:
-                            return serviceProvider.GetService<LeetX>();
-                        case Indexer.Rarbg:
-                            return serviceProvider.GetService<Rarbg>();
-                        case Indexer.All: throw new InvalidEnumArgumentException("All indexer has no class to instantiate.");
-                        default: throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
-                    }
-                });
+                    var type = indexer.GetAttribute<TypeAttribute>().Type;
+
+                    return serviceProvider.GetService(type) as IIndexer;
+                }
+                catch (Exception)
+                {
+                    throw new KeyNotFoundException($"Indexer is not registered: {indexer}");
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,6 +8,5 @@ namespace Sweater.Core.Indexers.Public.Rarbg.Models
     {
         public string BaseUrl { get; set; }
         public string AppId{ get; set; }
-        public bool IsEnabled { get; set; }
     }
 }

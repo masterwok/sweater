@@ -10,8 +10,6 @@ namespace Sweater.Core.Constants
     /// </summary>
     public enum Indexer
     {
-        // TODO: Consider removing "All" value 
-        All,
         [Type(typeof(ThePirateBay))] ThePirateBay,
         [Type(typeof(LeetX))] LeetX,
         [Type(typeof(Rarbg))] Rarbg

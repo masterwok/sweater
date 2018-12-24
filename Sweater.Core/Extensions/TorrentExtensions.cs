@@ -19,16 +19,17 @@ namespace Sweater.Core.Extensions
         public static IList<TorrentQueryResult> FlattenIndexerResults(
             this IEnumerable<IndexerResult> indexerResults
         ) => indexerResults
-            ?.SelectMany(r => r.Torrents.Select(t => new TorrentQueryResult
-            {
-                Indexer = r.Indexer.ToString(),
-                MagnetUri = t.MagnetUri,
-                Name = t.Name,
-                Size = t.Size,
-                Seeders = t.Seeders,
-                Leechers = t.Leechers,
-                UploadedOn = t.UploadedOn
-            }))
+            ?.SelectMany(r => r.Torrents
+                .Select(t => new TorrentQueryResult
+                {
+                    Indexer = r.Indexer.ToString(),
+                    MagnetUri = t.MagnetUri,
+                    Name = t.Name,
+                    Size = t.Size,
+                    Seeders = t.Seeders,
+                    Leechers = t.Leechers,
+                    UploadedOn = t.UploadedOn
+                }))
             .DistinctBy(t => t.MagnetUri)
             .OrderByDescending(t => t.Seeders)
             .ToList();

@@ -111,7 +111,8 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
 
         private IEnumerable<Torrent> ParseTorrentEntries(HtmlNodeCollection nodes) => nodes
             .Where(n => !ShouldSkipRow(n))
-            .Select(TryParseRow);
+            .Select(TryParseRow)
+            .Where(t => t != null);
 
         private int GetLastPageIndex(HtmlNode lastTableNode)
         {

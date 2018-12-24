@@ -14,7 +14,7 @@ namespace Sweater.Core.Models
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     public class Query
     {
-        public Indexer[] Indexers { get; set; } = {Indexer.All};
+        public Indexer[] Indexers { get; set; } = new Indexer[0];
 
         public string QueryString { get; set; }
 

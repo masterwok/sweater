@@ -43,6 +43,13 @@ namespace Sweater.Api.Services
         public async Task<IList<string>> GetIndexerTags()
             => await _queryService.GetIndexerTags();
 
+        private static string GetIndexersString(
+            IEnumerable<Indexer> indexers
+        ) => string.Join(
+            "_"
+            , indexers.Select(i => i.ToString())
+        );
+
         public async Task<IList<TorrentQueryResult>> Query(Query query)
         {
             if (!_queryConfig.IsCacheEnabled)
@@ -50,16 +57,17 @@ namespace Sweater.Api.Services
                 return await _queryService.Query(query);
             }
 
-            return await _memoryCache.GetOrCreateAsync(
-                $"{query.Indexer}_{query.QueryString}".ToLower()
-                , async entry =>
-                {
-                    entry.SetSlidingExpiration(
-                        TimeSpan.FromMilliseconds(_queryConfig.CacheTimeSpanMs)
-                    );
+            var indexersString = GetIndexersString(query.Indexers);
+            var key = $"{indexersString}_{query.QueryString}".ToLower();
 
-                    return (await _queryService.Query(query)).ToList();
-                });
+            return await _memoryCache.GetOrCreateAsync(key, async entry =>
+            {
+                entry.SetSlidingExpiration(
+                    TimeSpan.FromMilliseconds(_queryConfig.CacheTimeSpanMs)
+                );
+
+                return (await _queryService.Query(query)).ToList();
+            });
         }
     }
 }

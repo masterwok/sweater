@@ -29,7 +29,7 @@ namespace Sweater.Api.Test.Controllers
 
         private static readonly Query Query = new Query
         {
-            Indexer = Fixture.Create<Indexer>(),
+            Indexers = Fixture.Create<Indexer[]>(),
             QueryString = Fixture.Create<string>()
         };
 

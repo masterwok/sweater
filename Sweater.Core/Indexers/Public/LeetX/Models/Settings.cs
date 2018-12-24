@@ -8,6 +8,5 @@ namespace Sweater.Core.Indexers.Public.LeetX.Models
     {
         public string BaseUrl { get; set; }
         public int MaxPages { get; set; }
-        public bool IsEnabled { get; set; }
     }
 }
