@@ -5,7 +5,7 @@
       "maxPages": "1"
     },
     "thePirateBay": {
-      "baseUrl": "https://thepiratebay.online",
+      "baseUrl": "https://thepiratebay.org",
       "maxPages": "1"
     },
     "rarbg": {

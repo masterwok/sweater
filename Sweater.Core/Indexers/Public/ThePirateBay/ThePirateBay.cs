@@ -52,7 +52,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             var rootNode = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
-                , 1
+                , 0
             );
 
             var torrentNodes = rootNode.SelectNodes(TorrentRowXPath);
