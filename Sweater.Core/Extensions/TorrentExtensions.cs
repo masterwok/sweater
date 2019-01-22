@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Sweater.Api.Models;
 using Sweater.Core.Models;
 
 namespace Sweater.Core.Extensions

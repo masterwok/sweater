@@ -11,6 +11,7 @@ using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Public.ThePirateBay.Models;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
+using Sweater.Core.Utils;
 
 namespace Sweater.Core.Indexers.Public.ThePirateBay
 {
@@ -58,7 +59,11 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             var firstPage = ParseTorrentEntries(torrentNodes);
             var torrents = new List<Torrent>(firstPage);
             var lastPageIndex = GetLastPageIndex(torrentNodes.Last());
-            var pageRange = GetPageRange(lastPageIndex, _settings.MaxPages);
+            var pageRange = PagingUtil.GetPageRange(
+                lastPageIndex
+                , _settings.MaxPages
+                , true
+            );
 
             if (pageRange == null)
             {
@@ -78,20 +83,6 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             )).SelectMany(i => i));
 
             return torrents;
-        }
-
-        private static IEnumerable<int> GetPageRange(
-            int lastPageIndex
-            , int maxPages
-        )
-        {
-            var remainingPageCount = Math.Min(maxPages, lastPageIndex) - 1;
-
-            return remainingPageCount <= 0
-                ? null
-                : Enumerable
-                    .Range(1, remainingPageCount)
-                    .ToList();
         }
 
         private async Task<HtmlNode> GetHtmlDocument(

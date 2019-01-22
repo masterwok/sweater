@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Sweater.Core.Extensions;
 
-namespace Sweater.Api.Models
+namespace Sweater.Core.Models
 {
     /// <summary>
     /// A torrent query result item.

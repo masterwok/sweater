@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sweater.Api.Models;
 using Sweater.Core.Models;
 
 namespace Sweater.Core.Services.Contracts

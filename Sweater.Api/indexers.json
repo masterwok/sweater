@@ -11,6 +11,10 @@
     "rarbg": {
       "baseUrl": "https://torrentapi.org",
       "appId": "sweater"
+    },
+    "kat": {
+      "baseUrl": "https://kat.am",
+      "maxPages": "1"
     }
   }
 }

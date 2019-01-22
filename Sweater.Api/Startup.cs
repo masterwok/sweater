@@ -15,6 +15,7 @@ using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
+using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
@@ -68,6 +69,7 @@ namespace Sweater.Api
             services.AddTransient<ThePirateBay>();
             services.AddTransient<LeetX>();
             services.AddTransient<Rarbg>();
+            services.AddTransient<Kat>();
 
             // Indexer Configurations
             services.AddTransient(serviceProvider => _indexerConfigSection
@@ -81,6 +83,10 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(ThePirateBay.ConfigName)
                 .Get<Core.Indexers.Public.ThePirateBay.Models.Settings>());
+            
+            services.AddTransient(serviceProvider => _indexerConfigSection
+                .GetSection(Kat.ConfigName)
+                .Get<Core.Indexers.Public.Kat.Models.Settings>());
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>

@@ -9,6 +9,7 @@ using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Public.LeetX.Models;
 using Sweater.Core.Models;
+using Sweater.Core.Utils;
 
 namespace Sweater.Core.Indexers.Public.LeetX
 {
@@ -47,14 +48,15 @@ namespace Sweater.Core.Indexers.Public.LeetX
             );
 
             var firstPage = await ParseResponse(rootNode);
-            var torrents = new List<Torrent>(firstPage);
             var lastPageIndex = GetLastPageIndex(rootNode);
-            var pageRange = GetPageRange(lastPageIndex, _settings.MaxPages);
+            var pageRange = PagingUtil.GetPageRange(lastPageIndex, _settings.MaxPages);
 
             if (pageRange == null)
             {
-                return torrents;
+                return firstPage;
             }
+
+            var torrents = new List<Torrent>(firstPage);
 
             torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
                 {
@@ -69,20 +71,6 @@ namespace Sweater.Core.Indexers.Public.LeetX
             )).SelectMany(i => i));
 
             return torrents;
-        }
-
-        private static IEnumerable<int> GetPageRange(
-            int lastPageIndex
-            , int maxPages
-        )
-        {
-            var remainingPageCount = Math.Min(maxPages, lastPageIndex) - 1;
-
-            return remainingPageCount <= 0
-                ? null
-                : Enumerable
-                    .Range(2, remainingPageCount)
-                    .ToList();
         }
 
         private async Task<HtmlNode> GetHtmlDocument(

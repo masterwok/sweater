@@ -67,7 +67,7 @@ class Search extends Component {
                     , params: {
                         queryString: this.props.query
                         // TODO: Need to actually pass indexers here..
-                        //, indexer: this.props.indexer
+                        //, indexers: this.props.indexer
                         , pageIndex: pageIndex
                         , pageSize: pageSize
                     }
@@ -166,7 +166,7 @@ class Search extends Component {
                                 uploadedOn={torrent.uploadedOn}
                                 size={torrent.size}
                                 seeders={torrent.seeders}
-                                leechers={torrent.seeders}/>
+                                leechers={torrent.leechers}/>
                         ))}
                     </Infinite>
                 </div>

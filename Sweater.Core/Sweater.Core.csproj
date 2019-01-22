@@ -12,10 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Indexers\Private" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="config.json" />
     </ItemGroup>
 

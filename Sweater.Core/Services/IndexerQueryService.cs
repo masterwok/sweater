@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sweater.Api.Models;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
