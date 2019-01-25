@@ -41,6 +41,8 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         {
             _logger = logger;
             _settings = settings;
+            
+            HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
         public override Task Login() => Task.FromResult(true);
@@ -92,7 +94,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         )
         {
             var response = await HttpClient.GetStringAsync(
-                $"{baseUrl}/s/?q={queryString}&page={page}&orderby=99"
+                $"{baseUrl}/search/{queryString}/{page}/99"
             );
 
             return response
