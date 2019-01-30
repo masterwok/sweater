@@ -22,13 +22,13 @@ namespace Sweater.Core.Indexers.Public.Kat
     public class Kat : BaseIndexer
     {
         public static readonly string ConfigName = Indexer.Kat.ToString();
-        
+
         private static readonly Regex DateFormatRegex = new Regex(@"(\d+)(minute|hour|day|month|year)s?$");
 
         private const string PageNumberXPath = "//*[@id=\"wrapperInner\"]/div[2]/table/tbody/tr/td[1]/div[2]/a";
         private const string PageSkipTextValue = ">>";
 
-        private const string TorrentRowXPath = "tr[@class='even' or @class='odd']";
+        private const string TorrentRowXPath = "//tr[@class='even' or @class='odd']";
         private const string TorrentRowLinkXPath = ".//a[@class='cellMainLink']";
         private const string TorrentMagnetXPath = "//a[@title='Magnet link']";
         private const string TorrentRowSizeXPath = "td[2]";
@@ -54,8 +54,39 @@ namespace Sweater.Core.Indexers.Public.Kat
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
+        /// <summary>
+        /// Attempt to parse results for the single result case. This is a special case where only one result is
+        /// returned. When this happens, including paging will break the scraper.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns>If single results case, the single result. Else, an empty list.</returns>
+        private async Task<IList<Torrent>> ParseSinglePageCase(Query query)
+        {
+            var documentNode = await GetHtmlDocument(
+                _settings.BaseUrl
+                , query.QueryString
+            );
+
+            var isLastPage = GetLastPageIndex(documentNode) == 0;
+
+            return isLastPage
+                ? await ParseTorrents(_settings.BaseUrl, documentNode)
+                : new Torrent[0];
+        }
+
         public override async Task<IEnumerable<Torrent>> Query(Query query)
         {
+            // Check if there is only one page of results as including page when there's only one page of results will
+            // break the scraper.
+            var singlePageCaseResults = await ParseSinglePageCase(query);
+
+            // Results implies that there was only one page of results.
+            if (singlePageCaseResults.Count > 0)
+            {
+                return singlePageCaseResults;
+            }
+
+            // Continue parsing as normal...
             var documentNode = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
@@ -229,16 +260,18 @@ namespace Sweater.Core.Indexers.Public.Kat
         private async Task<HtmlNode> GetHtmlDocument(
             string baseUrl
             , string queryString
-            , int page
+            , int? page = null
         )
         {
             // TODO: Fix broken single entry query result
+            // It seems to be the page number that breaks in when there's only 1 page
             // https://kat.am/usearch/True.Detective.S03E04.The.Hour.and.the.Day.720p.AMZN.WEB-DL.DDP5.1.H.264-NTb[eztv].mkv/0/?sortby=seeders&sort=desc
+            var url = page == null
+                ? $"{baseUrl}/usearch/{queryString}/?sortby=seeders&sort=desc"
+                : $"{baseUrl}/usearch/{queryString}/{page}/?sortby=seeders&sort=desc";
 
             // https://kat.am/usearch/hackers%201995/?sortby=seeders&sort=desc
-            var response = await HttpClient.GetStringAsync(
-                $"{baseUrl}/usearch/{queryString}/{page}/?sortby=seeders&sort=desc"
-            );
+            var response = await HttpClient.GetStringAsync(url);
 
             return response
                 .ToHtmlDocument()
