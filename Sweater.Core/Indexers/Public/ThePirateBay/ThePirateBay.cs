@@ -21,9 +21,9 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         public static readonly string ConfigName = Indexer.ThePirateBay.ToString();
 
         private static readonly Regex InfoTextRegex = new Regex(@"Uploaded\s[Today|\s]*([\d\W]*),\s*Size\s*(.*),");
-        private static readonly Regex _regexMonthDayTime = new Regex(@"(\d{2})-(\d{2}) (\d{2}):(\d{2})$");
-        private static readonly Regex _regexMonthDayYear = new Regex(@"(\d{2})-(\d{2}) (\d{4})$");
-        private static readonly Regex _regexTodayTime = new Regex(@"(\d{2}):(\d{2})$");
+        private static readonly Regex RegexMonthDayTime = new Regex(@"(\d{2})-(\d{2}) (\d{2}):(\d{2})$");
+        private static readonly Regex RegexMonthDayYear = new Regex(@"(\d{2})-(\d{2}) (\d{4})$");
+        private static readonly Regex RegexTodayTime = new Regex(@"(\d{2}):(\d{2})$");
 
         private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
         private static readonly string TorrentNameXPath = "td[2]/div/a";
@@ -66,7 +66,6 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             var firstPage = ParseTorrentEntries(torrentNodes);
             var torrents = new List<Torrent>(firstPage);
 
-            // No results, return empty array.
             if (torrents.Count == 0)
             {
                 return new Torrent[0];
@@ -224,7 +223,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
         private static DateTime? TryParseMonthDayYearDateFormat(string dateText)
         {
-            var monthDayYearMatches = _regexMonthDayYear.Matches(dateText);
+            var monthDayYearMatches = RegexMonthDayYear.Matches(dateText);
 
             if (monthDayYearMatches.Count <= 0)
             {
@@ -254,7 +253,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
         private static DateTime? TryParseMonthDayTime(string dateText)
         {
-            var monthDayTimeMatches = _regexMonthDayTime.Matches(dateText);
+            var monthDayTimeMatches = RegexMonthDayTime.Matches(dateText);
 
             if (monthDayTimeMatches.Count <= 0)
             {
@@ -286,7 +285,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
         private static DateTime? TryParseTodayTime(string dateText)
         {
-            var todayTimeMatches = _regexTodayTime.Matches(dateText);
+            var todayTimeMatches = RegexTodayTime.Matches(dateText);
 
             if (todayTimeMatches.Count <= 0)
             {

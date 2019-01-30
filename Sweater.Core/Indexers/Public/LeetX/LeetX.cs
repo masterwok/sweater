@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,6 +26,22 @@ namespace Sweater.Core.Indexers.Public.LeetX
         private const string LeechersXPath = "td[3]";
         private const string UploadedOnXPath = "td[4]";
         private const string SizeXPath = "td[5]";
+
+        private static readonly Dictionary<string, int> _monthMapping = new Dictionary<string, int>
+        {
+            {"Jan", 1},
+            {"Feb", 2},
+            {"Mar", 3},
+            {"Apr", 4},
+            {"May", 5},
+            {"Jun", 6},
+            {"Jul", 7},
+            {"Aug", 8},
+            {"Sep", 9},
+            {"Oct", 10},
+            {"Nov", 11},
+            {"Dec", 12}
+        };
 
         public override string Tag => ConfigName;
 
@@ -138,16 +155,135 @@ namespace Sweater.Core.Indexers.Public.LeetX
         private async Task<Torrent> ParseTorrentRow(HtmlNode torrentNode)
         {
             var torrentHrefNode = torrentNode.SelectSingleNode(TorrentNameXPath);
+            
             return new Torrent
             {
                 Name = torrentHrefNode?.InnerText,
                 Seeders = int.Parse(torrentNode.SelectSingleNode(SeedersXPath)?.InnerText ?? "0"),
                 Leechers = int.Parse(torrentNode.SelectSingleNode(LeechersXPath)?.InnerText ?? "0"),
-//                UploadedOn = torrentNode.SelectSingleNode(UploadedOnXPath)?.InnerText,
+                UploadedOn = ParseDateTime(torrentNode.SelectSingleNode(UploadedOnXPath)?.InnerText ?? string.Empty),
                 Size = GetSizeText(torrentNode),
                 MagnetUri = await GetInfoHash(torrentHrefNode?.GetAttributeValue("href", null))
             };
         }
+
+        private static readonly Regex _regexMonthDateYear = new Regex(@"(\w{3}). (\d+)\w{2,} '(\d{2})$");
+
+        // TODO: Parse: "Nov. 20th '12"
+        /// <summary>
+        /// Attempt to parse a date with "Uploaded Today 02:19" format.
+        /// </summary>
+        /// <param name="dateText">The text containing the raw date.</param>
+        /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
+        private static DateTime? TryParseMonthDateYear(string dateText)
+        {
+            var todayTimeMatches = _regexMonthDateYear.Matches(dateText);
+
+            if (todayTimeMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = todayTimeMatches[0].Groups;
+
+            // Must have exactly four groups for this format.
+            if (matchGroups.Count != 4)
+            {
+                return null;
+            }
+
+            var yearText = matchGroups[3].Value;
+            var yearFormattedText = yearText.Length == 2
+                // '18 format
+                ? $"20{yearText}"
+                // Possible four character format
+                : yearText;
+
+            return new DateTime(
+                year: int.Parse(yearFormattedText)
+                , month: _monthMapping[matchGroups[1].Value]
+                , day: int.Parse(matchGroups[2].Value)
+            );
+        }
+
+        // TODO: Parse: "2am Jan. 16th"
+        private static readonly Regex _timeMonthDayRegex = new Regex(@"(\d+)(\w{2}) (\w{3}). (\d+)\w{2}$");
+
+        private static DateTime? TryParseTimeMonthDayDate(string dateText)
+        {
+            var todayTimeMatches = _timeMonthDayRegex.Matches(dateText);
+
+            if (todayTimeMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = todayTimeMatches[0].Groups;
+
+            // Must have exactly four groups for this format.
+            if (matchGroups.Count != 5)
+            {
+                return null;
+            }
+
+            var hourRawValue = int.Parse(matchGroups[1].Value);
+            var timeOfDay = matchGroups[2].Value;
+
+            var hour = timeOfDay.ToLowerInvariant().Equals("am")
+                ? hourRawValue
+                : 12 + hourRawValue;
+
+            return new DateTime(
+                year: DateTime.Now.Year
+                , month: _monthMapping[matchGroups[3].Value]
+                , day: int.Parse(matchGroups[4].Value)
+                , hour: hour
+                , minute: 0
+                , second: 0
+            );
+        }
+
+        private static readonly Regex RegexTodayTime = new Regex(@"(\d+):(\d{2})(\w{2})$");
+
+        /// <summary>
+        /// Attempt to parse a date with "2:19pm" format.
+        /// </summary>
+        /// <param name="dateText">The text containing the raw date.</param>
+        /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
+        private static DateTime? TryParseTodayTime(string dateText)
+        {
+            var todayTimeMatches = RegexTodayTime.Matches(dateText);
+
+            if (todayTimeMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = todayTimeMatches[0].Groups;
+
+            // Must have exactly three groups for this format.
+            if (matchGroups.Count != 4)
+            {
+                return null;
+            }
+
+            var now = DateTime.Now;
+
+            return new DateTime(
+                year: now.Year
+                , month: now.Month
+                , day: now.Day
+                , hour: int.Parse(matchGroups[1].Value)
+                , minute: int.Parse(matchGroups[2].Value)
+                , second: 0
+            );
+        }
+
+        private static DateTime? ParseDateTime(
+            string dateText
+        ) => TryParseMonthDateYear(dateText)
+             ?? TryParseTimeMonthDayDate(dateText)
+             ?? TryParseTodayTime(dateText);
 
         private static long GetSizeText(HtmlNode torrentNode)
         {
