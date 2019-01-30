@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sweater.Core.Constants;
 using Sweater.Core.Models;
 
 namespace Sweater.Core.Extensions
@@ -30,7 +32,6 @@ namespace Sweater.Core.Extensions
                     UploadedOn = t.UploadedOn
                 }))
             .DistinctBy(t => t.MagnetUri)
-            .OrderByDescending(t => t.Seeders)
             .ToList();
     }
 }

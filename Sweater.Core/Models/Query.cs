@@ -16,6 +16,10 @@ namespace Sweater.Core.Models
     {
         public Indexer[] Indexers { get; set; } = new Indexer[0];
 
+        public SortField SortField { get; set; } = SortField.Seeders;
+
+        public SortOrder SortOrder { get; set; } = SortOrder.Descending;
+
         public string QueryString { get; set; }
 
         public override string ToString() => $"Indexer Tag = {IndexersString}, " +

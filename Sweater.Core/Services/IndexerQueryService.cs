@@ -63,7 +63,12 @@ namespace Sweater.Core.Services
                 indexer => QueryIndexer(indexer, query)
             ));
 
-            return indexerResults.FlattenIndexerResults().ToList();
+            return indexerResults
+                .FlattenIndexerResults()
+                .SortTorrentQueryResults(
+                    query.SortField
+                    , query.SortOrder
+                );
         }
 
         private async Task<IndexerResult> QueryIndexer(
