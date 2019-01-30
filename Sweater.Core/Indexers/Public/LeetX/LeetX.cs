@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Jackett.Common.Utils;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -149,11 +150,11 @@ namespace Sweater.Core.Indexers.Public.LeetX
             };
         }
 
-        private static string GetSizeText(HtmlNode torrentNode)
+        private static long GetSizeText(HtmlNode torrentNode)
         {
             var sizeNode = torrentNode.SelectSingleNode(SizeXPath);
             sizeNode?.SelectNodes("span")?.ToList().ForEach(node => node.Remove());
-            return sizeNode?.InnerText;
+            return ParseUtil.GetBytes(sizeNode?.InnerText);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
+using Jackett.Common.Utils;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -41,7 +42,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         {
             _logger = logger;
             _settings = settings;
-            
+
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
@@ -186,10 +187,10 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             }
         }
 
-        private static string ParseSize(string infoText) => InfoTextRegex
+        private static long ParseSize(string infoText) => ParseUtil.GetBytes(InfoTextRegex
             .Match(infoText)
             .Groups[2]
-            .Value;
+            .Value);
 
         private static string ParseUploadedOn(string infoText)
         {

@@ -75,7 +75,7 @@ namespace Sweater.Core.Indexers.Public.Rarbg
             {
                 Name = r.Title,
                 MagnetUri = r.Download,
-                Size = ((long) (r.Size ?? 0L)).ToHumanReadableByteCount(false),
+                Size = r.Size,
                 Seeders = r.Seeders,
                 Leechers = r.Leechers,
                 UploadedOn = r.Pubdate

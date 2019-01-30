@@ -18,7 +18,7 @@ namespace Sweater.Core.Models
         public string Name { get; set; }
 
         // TODO: Size needs to be parsed to bytes.
-        public string Size { get; set; }
+        public long Size { get; set; }
         public int Seeders { get; set; }
 
         public int Leechers { get; set; }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Jackett.Common.Utils;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -127,7 +128,7 @@ namespace Sweater.Core.Indexers.Public.Kat
                 Name = mainLink.InnerText.Trim(),
                 Leechers = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowLeechXPath).InnerText.Trim()),
                 Seeders = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowSeedXPath).InnerText.Trim()),
-                Size = torrentRowNode.SelectSingleNode(TorrentRowSizeXPath).InnerText.Trim(),
+                Size = ParseUtil.GetBytes(torrentRowNode.SelectSingleNode(TorrentRowSizeXPath).InnerText.Trim()),
                 UploadedOn = string.Empty
             };
         }
