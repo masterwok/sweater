@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -18,14 +22,17 @@ namespace Sweater.Core.Indexers.Public.Kat
     public class Kat : BaseIndexer
     {
         public static readonly string ConfigName = Indexer.Kat.ToString();
+        
+        private static readonly Regex DateFormatRegex = new Regex(@"(\d+)(minute|hour|day|month|year)s?$");
 
         private const string PageNumberXPath = "//*[@id=\"wrapperInner\"]/div[2]/table/tbody/tr/td[1]/div[2]/a";
         private const string PageSkipTextValue = ">>";
 
-        private const string TorrentRowXPath = "//tr[@class='even' or @class='odd']";
+        private const string TorrentRowXPath = "tr[@class='even' or @class='odd']";
         private const string TorrentRowLinkXPath = ".//a[@class='cellMainLink']";
         private const string TorrentMagnetXPath = "//a[@title='Magnet link']";
         private const string TorrentRowSizeXPath = "td[2]";
+        private const string TorrentRowUploadedOnXPath = "td[4]";
         private const string TorrentRowSeedXPath = "td[5]";
         private const string TorrentRowLeechXPath = "td[6]";
 
@@ -40,7 +47,12 @@ namespace Sweater.Core.Indexers.Public.Kat
         public Kat(
             IHttpClient httpClient
             , Settings settings
-        ) : base(httpClient) => _settings = settings;
+        ) : base(httpClient)
+        {
+            _settings = settings;
+
+            HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
+        }
 
         public override async Task<IEnumerable<Torrent>> Query(Query query)
         {
@@ -109,6 +121,33 @@ namespace Sweater.Core.Indexers.Public.Kat
             return await Task.WhenAll(torrentRows.Select(async n => await ParseTorrent(baseUrl, n)));
         }
 
+//        private Torrent ParseTorrent(HtmlNode rootNode)
+//        {
+//            var magnetUri = rootNode
+//                .SelectSingleNode(TorrentMagnetXPath)
+//                ?.InnerText
+//                .Trim();
+//
+//            if (magnetUri == null)
+//            {
+//                return null;
+//            }
+//
+//            return new Torrent
+//            {
+//                MagnetUri = magnetUri,
+////                Name = mainLink.InnerText.Trim(),
+////                Leechers = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowLeechXPath).InnerText.Trim()),
+////                Seeders = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowSeedXPath).InnerText.Trim()),
+////                Size = ParseUtil.GetBytes(torrentRowNode.SelectSingleNode(TorrentRowSizeXPath).InnerText.Trim()),
+////                UploadedOn = ParseUploadedOn(torrentRowNode
+////                    .SelectSingleNode(TorrentRowUploadedOnXPath)
+////                    .InnerText
+////                    .Trim()
+////                )
+//            };
+//        }
+
         private async Task<Torrent> ParseTorrent(
             string baseUrl
             , HtmlNode torrentRowNode
@@ -128,8 +167,52 @@ namespace Sweater.Core.Indexers.Public.Kat
                 Leechers = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowLeechXPath).InnerText.Trim()),
                 Seeders = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowSeedXPath).InnerText.Trim()),
                 Size = ParseUtil.GetBytes(torrentRowNode.SelectSingleNode(TorrentRowSizeXPath).InnerText.Trim()),
-//                UploadedOn = string.Empty
+                UploadedOn = ParseUploadedOn(torrentRowNode
+                    .SelectSingleNode(TorrentRowUploadedOnXPath)
+                    .InnerText
+                    .Trim()
+                )
             };
+        }
+
+        private DateTime? ParseUploadedOn(string dateText)
+        {
+            Debug.WriteLine($"Date Text: {dateText}");
+
+            var dateMatches = DateFormatRegex.Matches(dateText);
+
+            if (dateMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = dateMatches[0].Groups;
+
+            // Must have exactly three groups for this format.
+            if (matchGroups.Count != 3)
+            {
+                return null;
+            }
+
+            var value = int.Parse(matchGroups[1].Value);
+            var unit = matchGroups[2].Value;
+            var now = DateTime.Now;
+
+            switch (unit)
+            {
+                case "month":
+                    return now.AddMonths(-value);
+                case "year":
+                    return now.AddYears(-value);
+                case "day":
+                    return now.AddDays(-value);
+                case "hour":
+                    return now.AddHours(-value);
+                case "minute":
+                    return now.AddMinutes(-value);
+                default:
+                    throw new ArgumentOutOfRangeException($"Unexpected age unit: {unit}");
+            }
         }
 
         private async Task<string> GetMagnetUri(string baseUrl, string href)
@@ -149,6 +232,9 @@ namespace Sweater.Core.Indexers.Public.Kat
             , int page
         )
         {
+            // TODO: Fix broken single entry query result
+            // https://kat.am/usearch/True.Detective.S03E04.The.Hour.and.the.Day.720p.AMZN.WEB-DL.DDP5.1.H.264-NTb[eztv].mkv/0/?sortby=seeders&sort=desc
+
             // https://kat.am/usearch/hackers%201995/?sortby=seeders&sort=desc
             var response = await HttpClient.GetStringAsync(
                 $"{baseUrl}/usearch/{queryString}/{page}/?sortby=seeders&sort=desc"
