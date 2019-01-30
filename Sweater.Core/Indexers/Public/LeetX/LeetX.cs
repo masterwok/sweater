@@ -65,6 +65,12 @@ namespace Sweater.Core.Indexers.Public.LeetX
             );
 
             var firstPage = await ParseResponse(rootNode);
+
+            if (!firstPage.Any())
+            {
+                return new Torrent[0];
+            }
+
             var lastPageIndex = GetLastPageIndex(rootNode);
             var pageRange = PagingUtil.GetPageRange(lastPageIndex, _settings.MaxPages);
 
@@ -105,12 +111,28 @@ namespace Sweater.Core.Indexers.Public.LeetX
                 .DocumentNode;
         }
 
-        private async Task<IEnumerable<Torrent>> ParseResponse(HtmlNode rootNode)
-            => await Task.WhenAll(
-                rootNode
-                    .SelectNodes(TorrentRowXPath)
-                    .Select(ParseTorrentRow)
-            );
+        private async Task<IList<Torrent>> ParseResponse(HtmlNode rootNode)
+        {
+            if (rootNode == null)
+            {
+                return new Torrent[0];
+            }
+
+            var tasks = rootNode
+                .SelectNodes(TorrentRowXPath)
+                ?.Select(ParseTorrentRow);
+
+            if (tasks?.Any() != true)
+            {
+                return new List<Torrent>();
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results
+                .Where(t => t != null)
+                .ToList();
+        }
 
         private static int GetLastPageIndex(HtmlNode rootNode)
         {
@@ -154,8 +176,13 @@ namespace Sweater.Core.Indexers.Public.LeetX
 
         private async Task<Torrent> ParseTorrentRow(HtmlNode torrentNode)
         {
+            if (torrentNode == null)
+            {
+                return null;
+            }
+
             var torrentHrefNode = torrentNode.SelectSingleNode(TorrentNameXPath);
-            
+
             return new Torrent
             {
                 Name = torrentHrefNode?.InnerText,
