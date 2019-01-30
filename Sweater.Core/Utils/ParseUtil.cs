@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Jackett.Common.Utils
+namespace Sweater.Core.Utils
 {
     public static class ParseUtil
     {
@@ -157,12 +157,12 @@ namespace Jackett.Common.Utils
             return (long) value;
         }
 
-        private static long BytesFromTB(float tb) => BytesFromGB(tb * 1024f);
+        public static long BytesFromTB(float tb) => BytesFromGB(tb * 1024f);
 
-        private static long BytesFromGB(float gb) => BytesFromMB(gb * 1024f);
+        public static long BytesFromGB(float gb) => BytesFromMB(gb * 1024f);
 
-        private static long BytesFromMB(float mb) => BytesFromKB(mb * 1024f);
+        public static long BytesFromMB(float mb) => BytesFromKB(mb * 1024f);
 
-        private static long BytesFromKB(float kb) => (long) (kb * 1024f);
+        public static long BytesFromKB(float kb) => (long) (kb * 1024f);
     }
 }

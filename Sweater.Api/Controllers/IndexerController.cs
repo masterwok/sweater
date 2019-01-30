@@ -34,13 +34,12 @@ namespace Sweater.Api.Controllers
         /// <returns>A TorrentQueryResult instance.</returns>
         [HttpGet]
         [Route("[action]")]
-        public async Task<PaginatedResponse<TorrentQueryResult>> Query(
-            [FromQuery] Query query
-            , int pageIndex = 0
-            , int pageSize = 10
-        )
+        public async Task<PaginatedResponse<TorrentQueryResult>> Query(Query query)
         {
             var results = await _queryService.Query(query);
+            
+            var pageIndex = query.PageIndex;
+            var pageSize = query.PageSize;
 
             return new PaginatedResponse<TorrentQueryResult>
             {

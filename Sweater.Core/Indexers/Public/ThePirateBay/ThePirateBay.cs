@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
-using Jackett.Common.Utils;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -20,13 +20,17 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
     {
         public static readonly string ConfigName = Indexer.ThePirateBay.ToString();
 
+        private static readonly Regex InfoTextRegex = new Regex(@"Uploaded\s[Today|\s]*([\d\W]*),\s*Size\s*(.*),");
+        private static readonly Regex _regexMonthDayTime = new Regex(@"(\d{2})-(\d{2}) (\d{2}):(\d{2})$");
+        private static readonly Regex _regexMonthDayYear = new Regex(@"(\d{2})-(\d{2}) (\d{4})$");
+        private static readonly Regex _regexTodayTime = new Regex(@"(\d{2}):(\d{2})$");
+
         private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
         private static readonly string TorrentNameXPath = "td[2]/div/a";
         private static readonly string MagnetUriXPath = "td[2]/a[1]";
         private static readonly string SeedersXPath = "td[3]";
         private static readonly string LeechersXPath = "td[4]";
         private static readonly string DetailsXpath = "td[2]/font";
-        private static readonly Regex InfoTextRegex = new Regex(@"Uploaded\s*([\d\W]*),\s*Size\s*(.*),");
 
         private readonly ILogService<ThePirateBay> _logger;
 
@@ -170,14 +174,14 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
                 var infoText = DecodeAndFixWhitespace(
                     torrentNode.SelectSingleNode(DetailsXpath)?.InnerText
                 );
+
                 return new Torrent
                 {
                     Name = torrentNode.SelectSingleNode(TorrentNameXPath).InnerText,
                     MagnetUri = torrentNode.SelectSingleNode(MagnetUriXPath)?.GetAttributeValue("href", null),
                     Seeders = int.Parse(torrentNode.SelectSingleNode(SeedersXPath).InnerText ?? "0"),
                     Leechers = int.Parse(torrentNode.SelectSingleNode(LeechersXPath).InnerText ?? "0"),
-                    UploadedOn = ParseUploadedOn(infoText),
-                    Size = ParseSize(infoText)
+                    UploadedOn = ParseUploadedOn(infoText)
                 };
             }
             catch (Exception exception)
@@ -192,15 +196,112 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             .Groups[2]
             .Value);
 
-        private static string ParseUploadedOn(string infoText)
+        private static DateTime? ParseUploadedOn(string infoText)
         {
-            var text = InfoTextRegex
+            var dateText = InfoTextRegex
                 .Match(infoText)
                 .Groups[1]
                 .Value;
-            return text.Contains(':')
-                ? $"{text.Substring(0, text.IndexOf(' '))}-{DateTime.Now.Year}"
-                : text.Replace(' ', '-');
+
+            return TryParseMonthDayYearDateFormat(dateText)
+                   ?? TryParseMonthDayTime(dateText)
+                   ?? TryParseTodayTime(dateText);
+        }
+
+        /// <summary>
+        /// Attempt to parse a date with "Uploaded 10-09 2014" format.
+        /// </summary>
+        /// <param name="dateText">The text containing the raw date.</param>
+        /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
+        private static DateTime? TryParseMonthDayYearDateFormat(string dateText)
+        {
+            var monthDayYearMatches = _regexMonthDayYear.Matches(dateText);
+
+            if (monthDayYearMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = monthDayYearMatches[0].Groups;
+
+
+            // Must have exactly three groups for this format.
+            if (matchGroups.Count != 4)
+            {
+                return null;
+            }
+
+            return new DateTime(
+                year: int.Parse(matchGroups[3].Value)
+                , month: int.Parse(matchGroups[1].Value)
+                , day: int.Parse(matchGroups[2].Value)
+            );
+        }
+
+        /// <summary>
+        /// Attempt to parse a date with "Uploaded 01-23 02:51" format.
+        /// </summary>
+        /// <param name="dateText">The text containing the raw date.</param>
+        /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
+        private static DateTime? TryParseMonthDayTime(string dateText)
+        {
+            var monthDayTimeMatches = _regexMonthDayTime.Matches(dateText);
+
+            if (monthDayTimeMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = monthDayTimeMatches[0].Groups;
+
+            // Must have exactly five groups for this format.
+            if (matchGroups.Count != 5)
+            {
+                return null;
+            }
+
+            return new DateTime(
+                year: DateTime.Now.Year
+                , month: int.Parse(matchGroups[1].Value)
+                , day: int.Parse(matchGroups[2].Value)
+                , hour: int.Parse(matchGroups[3].Value)
+                , minute: int.Parse(matchGroups[4].Value)
+                , second: 0
+            );
+        }
+
+        /// <summary>
+        /// Attempt to parse a date with "Uploaded Today 02:19" format.
+        /// </summary>
+        /// <param name="dateText">The text containing the raw date.</param>
+        /// <returns>If parse was successful, a new DateTime instance. Else, null.</returns>
+        private static DateTime? TryParseTodayTime(string dateText)
+        {
+            var todayTimeMatches = _regexTodayTime.Matches(dateText);
+
+            if (todayTimeMatches.Count <= 0)
+            {
+                return null;
+            }
+
+            var matchGroups = todayTimeMatches[0].Groups;
+
+            // Must have exactly three groups for this format.
+            if (matchGroups.Count != 3)
+            {
+                return null;
+            }
+
+            var now = DateTime.Now;
+
+            return new DateTime(
+                year: now.Year
+                , month: now.Month
+                , day: now.Day
+                , hour: int.Parse(matchGroups[1].Value)
+                , minute: int.Parse(matchGroups[2].Value)
+                , second: 0
+            );
         }
     }
 }

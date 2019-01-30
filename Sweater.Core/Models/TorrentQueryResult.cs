@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Sweater.Core.Extensions;
 
@@ -14,16 +15,10 @@ namespace Sweater.Core.Models
         public string Indexer { get; set; }
         public string InfoHash => MagnetUri.ParseInfoHash();
         public string MagnetUri { get; set; }
-
         public string Name { get; set; }
-
-        // TODO: Size needs to be parsed to bytes.
         public long Size { get; set; }
         public int Seeders { get; set; }
-
         public int Leechers { get; set; }
-
-        // TODO: UploadedOn needs to be parsed to datetime.
-        public string UploadedOn { get; set; }
+        public DateTime? UploadedOn { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Jackett.Common.Utils;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -144,7 +143,7 @@ namespace Sweater.Core.Indexers.Public.LeetX
                 Name = torrentHrefNode?.InnerText,
                 Seeders = int.Parse(torrentNode.SelectSingleNode(SeedersXPath)?.InnerText ?? "0"),
                 Leechers = int.Parse(torrentNode.SelectSingleNode(LeechersXPath)?.InnerText ?? "0"),
-                UploadedOn = torrentNode.SelectSingleNode(UploadedOnXPath)?.InnerText,
+//                UploadedOn = torrentNode.SelectSingleNode(UploadedOnXPath)?.InnerText,
                 Size = GetSizeText(torrentNode),
                 MagnetUri = await GetInfoHash(torrentHrefNode?.GetAttributeValue("href", null))
             };

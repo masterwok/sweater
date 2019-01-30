@@ -30,7 +30,9 @@ namespace Sweater.Api.Test.Controllers
         private static readonly Query Query = new Query
         {
             Indexers = Fixture.Create<Indexer[]>(),
-            QueryString = Fixture.Create<string>()
+            QueryString = Fixture.Create<string>(),
+            PageIndex = Fixture.Create<int>(),
+            PageSize = Fixture.Create<int>()
         };
 
         private static IEnumerable<Torrent> GetTorrents() => new List<Torrent>
@@ -88,11 +90,7 @@ namespace Sweater.Api.Test.Controllers
             var pageIndex = Fixture.Create<int>();
             var pageSize = Fixture.Create<int>();
 
-            var result = await _indexerController.Query(
-                Query
-                , pageIndex
-                , pageSize
-            );
+            var result = await _indexerController.Query(Query);
 
             Assert.AreEqual(pageIndex, result.PageIndex);
         }
@@ -103,11 +101,7 @@ namespace Sweater.Api.Test.Controllers
             var pageIndex = Fixture.Create<int>();
             var pageSize = Fixture.Create<int>();
 
-            var result = await _indexerController.Query(
-                Query
-                , pageIndex
-                , pageSize
-            );
+            var result = await _indexerController.Query(Query);
 
             Assert.AreEqual(pageSize, result.PageSize);
         }
@@ -115,11 +109,7 @@ namespace Sweater.Api.Test.Controllers
         [Test]
         public async Task Query_Returns_Correct_TotalItemCount_In_Result()
         {
-            var result = await _indexerController.Query(
-                Query
-                , Fixture.Create<int>()
-                , Fixture.Create<int>()
-            );
+            var result = await _indexerController.Query(Query);
 
             Assert.AreEqual(IndexerResults.Count * GetTorrents().Count(), result.TotalItemCount);
         }
@@ -127,7 +117,7 @@ namespace Sweater.Api.Test.Controllers
         [Test]
         public async Task Query_Returns_Expected_Item_Count_By_Page_Size_In_Result()
         {
-            var result = await _indexerController.Query(Query, 1, 2);
+            var result = await _indexerController.Query(Query);
 
             Assert.AreEqual(2, result.Items.Count);
         }

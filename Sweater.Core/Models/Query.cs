@@ -22,6 +22,9 @@ namespace Sweater.Core.Models
 
         public string QueryString { get; set; }
 
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+
         public override string ToString() => $"Indexer Tag = {IndexersString}, " +
                                              $"Query String = {QueryString}";
 

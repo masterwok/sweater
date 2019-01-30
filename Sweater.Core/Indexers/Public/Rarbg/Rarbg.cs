@@ -78,7 +78,7 @@ namespace Sweater.Core.Indexers.Public.Rarbg
                 Size = r.Size,
                 Seeders = r.Seeders,
                 Leechers = r.Leechers,
-                UploadedOn = r.Pubdate
+//                UploadedOn = r.Pubdate
             });
         }
 
