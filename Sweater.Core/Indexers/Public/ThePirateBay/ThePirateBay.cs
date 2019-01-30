@@ -65,6 +65,13 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             var torrentNodes = rootNode.SelectNodes(TorrentRowXPath);
             var firstPage = ParseTorrentEntries(torrentNodes);
             var torrents = new List<Torrent>(firstPage);
+
+            // No results, return empty array.
+            if (torrents.Count == 0)
+            {
+                return new Torrent[0];
+            }
+
             var lastPageIndex = GetLastPageIndex(torrentNodes.Last());
             var pageRange = PagingUtil.GetPageRange(
                 lastPageIndex
@@ -107,10 +114,12 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
                 .DocumentNode;
         }
 
-        private IEnumerable<Torrent> ParseTorrentEntries(HtmlNodeCollection nodes) => nodes
-            .Where(n => !ShouldSkipRow(n))
-            .Select(TryParseRow)
-            .Where(t => t != null);
+        private IEnumerable<Torrent> ParseTorrentEntries(
+            HtmlNodeCollection nodes
+        ) => nodes?.Where(n => !ShouldSkipRow(n))
+                 .Select(TryParseRow)
+                 .Where(t => t != null)
+             ?? new Torrent[0];
 
         private int GetLastPageIndex(HtmlNode lastTableNode)
         {
