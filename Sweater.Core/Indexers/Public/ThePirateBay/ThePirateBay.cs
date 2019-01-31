@@ -25,12 +25,12 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
         private static readonly Regex RegexMonthDayYear = new Regex(@"(\d{2})-(\d{2}) (\d{4})$");
         private static readonly Regex RegexTodayTime = new Regex(@"(\d{2}):(\d{2})$");
 
-        private static readonly string TorrentRowXPath = "//*[@id='searchResult']/tr";
-        private static readonly string TorrentNameXPath = "td[2]/div/a";
-        private static readonly string MagnetUriXPath = "td[2]/a[1]";
-        private static readonly string SeedersXPath = "td[3]";
-        private static readonly string LeechersXPath = "td[4]";
-        private static readonly string DetailsXpath = "td[2]/font";
+        private const string TorrentRowXPath = "//*[@id='searchResult']/tr";
+        private const string TorrentNameXPath = "td[2]/div/a";
+        private const string MagnetUriXPath = "td[2]/a[1]";
+        private const string SeedersXPath = "td[3]";
+        private const string LeechersXPath = "td[4]";
+        private const string DetailsXpath = "td[2]/font";
 
         private readonly ILogService<ThePirateBay> _logger;
 
@@ -189,7 +189,8 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
                     MagnetUri = torrentNode.SelectSingleNode(MagnetUriXPath)?.GetAttributeValue("href", null),
                     Seeders = int.Parse(torrentNode.SelectSingleNode(SeedersXPath).InnerText ?? "0"),
                     Leechers = int.Parse(torrentNode.SelectSingleNode(LeechersXPath).InnerText ?? "0"),
-                    UploadedOn = ParseUploadedOn(infoText)
+                    UploadedOn = ParseUploadedOn(infoText),
+                    Size = ParseSize(infoText)
                 };
             }
             catch (Exception exception)
