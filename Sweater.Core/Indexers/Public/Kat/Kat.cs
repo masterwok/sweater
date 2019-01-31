@@ -152,33 +152,6 @@ namespace Sweater.Core.Indexers.Public.Kat
             return await Task.WhenAll(torrentRows.Select(async n => await ParseTorrent(baseUrl, n)));
         }
 
-//        private Torrent ParseTorrent(HtmlNode rootNode)
-//        {
-//            var magnetUri = rootNode
-//                .SelectSingleNode(TorrentMagnetXPath)
-//                ?.InnerText
-//                .Trim();
-//
-//            if (magnetUri == null)
-//            {
-//                return null;
-//            }
-//
-//            return new Torrent
-//            {
-//                MagnetUri = magnetUri,
-////                Name = mainLink.InnerText.Trim(),
-////                Leechers = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowLeechXPath).InnerText.Trim()),
-////                Seeders = int.Parse(torrentRowNode.SelectSingleNode(TorrentRowSeedXPath).InnerText.Trim()),
-////                Size = ParseUtil.GetBytes(torrentRowNode.SelectSingleNode(TorrentRowSizeXPath).InnerText.Trim()),
-////                UploadedOn = ParseUploadedOn(torrentRowNode
-////                    .SelectSingleNode(TorrentRowUploadedOnXPath)
-////                    .InnerText
-////                    .Trim()
-////                )
-//            };
-//        }
-
         private async Task<Torrent> ParseTorrent(
             string baseUrl
             , HtmlNode torrentRowNode
