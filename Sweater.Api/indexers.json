@@ -15,6 +15,10 @@
     "kat": {
       "baseUrl": "https://kat.am",
       "maxPages": "1"
+    },
+    "zooqle": {
+      "baseUrl": "https://zooqle.com",
+      "maxPages": "1"
     }
   }
 }

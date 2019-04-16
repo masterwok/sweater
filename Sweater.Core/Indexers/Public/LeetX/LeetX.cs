@@ -27,7 +27,7 @@ namespace Sweater.Core.Indexers.Public.LeetX
         private const string UploadedOnXPath = "td[4]";
         private const string SizeXPath = "td[5]";
 
-        private static readonly Dictionary<string, int> _monthMapping = new Dictionary<string, int>
+        private static readonly Dictionary<string, int> MonthMapping = new Dictionary<string, int>
         {
             {"Jan", 1},
             {"Feb", 2},
@@ -228,7 +228,7 @@ namespace Sweater.Core.Indexers.Public.LeetX
 
             return new DateTime(
                 year: int.Parse(yearFormattedText)
-                , month: _monthMapping[matchGroups[1].Value]
+                , month: MonthMapping[matchGroups[1].Value]
                 , day: int.Parse(matchGroups[2].Value)
             );
         }
@@ -262,7 +262,7 @@ namespace Sweater.Core.Indexers.Public.LeetX
 
             return new DateTime(
                 year: DateTime.Now.Year
-                , month: _monthMapping[matchGroups[3].Value]
+                , month: MonthMapping[matchGroups[3].Value]
                 , day: int.Parse(matchGroups[4].Value)
                 , hour: hour
                 , minute: 0

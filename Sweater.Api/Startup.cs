@@ -19,6 +19,8 @@ using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
+using Sweater.Core.Indexers.Public.Zoogle;
+using Sweater.Core.Indexers.Public.Zooqle;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 
@@ -70,6 +72,7 @@ namespace Sweater.Api
             services.AddTransient<LeetX>();
             services.AddTransient<Rarbg>();
             services.AddTransient<Kat>();
+            services.AddTransient<Zooqle>();
 
             // Indexer Configurations
             services.AddTransient(serviceProvider => _indexerConfigSection
@@ -87,6 +90,10 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(Kat.ConfigName)
                 .Get<Core.Indexers.Public.Kat.Models.Settings>());
+            
+            services.AddTransient(serviceProvider => _indexerConfigSection
+                .GetSection(Zooqle.ConfigName)
+                .Get<Core.Indexers.Public.Zoogle.Models.Settings>());
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -232,7 +231,6 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             }
 
             var matchGroups = monthDayYearMatches[0].Groups;
-
 
             // Must have exactly three groups for this format.
             if (matchGroups.Count != 4)
