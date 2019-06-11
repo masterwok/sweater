@@ -71,15 +71,18 @@ namespace Sweater.Core.Indexers.Public.Rarbg
             var response = await HttpClient.GetStringAsync(requestUri);
             var queryResponse = JsonConvert.DeserializeObject<QueryResponse>(response);
 
-            return queryResponse.TorrentResults.Select(r => new Torrent
-            {
-                Name = r.Title,
-                MagnetUri = r.Download,
-                Size = r.Size,
-                Seeders = r.Seeders,
-                Leechers = r.Leechers,
-                UploadedOn = r.Pubdate
-            });
+            return queryResponse
+                .TorrentResults
+                ?.Select(r => new Torrent
+                {
+                    Name = r.Title,
+                    MagnetUri = r.Download,
+                    Size = r.Size,
+                    Seeders = r.Seeders,
+                    Leechers = r.Leechers,
+                    UploadedOn = r.Pubdate
+                })
+                ?? new Torrent[0];
         }
 
         private async Task<TokenResponse> GetToken(string appId)

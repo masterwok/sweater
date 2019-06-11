@@ -7,7 +7,7 @@ using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
-using Sweater.Core.Indexers.Public.Zoogle.Models;
+using Sweater.Core.Indexers.Public.Zooqle.Models;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
 using Sweater.Core.Utils;

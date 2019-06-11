@@ -3,7 +3,6 @@ using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
-using Sweater.Core.Indexers.Public.Zoogle;
 using Sweater.Core.Indexers.Public.Zooqle;
 
 namespace Sweater.Core.Constants
