@@ -179,7 +179,7 @@ namespace Sweater.Core.Indexers.Public.Kat
             };
         }
 
-        private static DateTime? ParseUploadedOn(string dateText)
+        private DateTime? ParseUploadedOn(string dateText)
         {
             Debug.WriteLine($"Date Text: {dateText}");
 
