@@ -14,8 +14,7 @@ using Sweater.Core.Utils;
 
 namespace Sweater.Core.Indexers.Public.Zooqle
 {
-    // TODO: Implement Paging
-    public class Zooqle : BaseIndexer
+    public sealed class Zooqle : BaseIndexer
     {
         private readonly ILogService<Zooqle> _logger;
         private readonly Settings _settings;
@@ -29,6 +28,7 @@ namespace Sweater.Core.Indexers.Public.Zooqle
         private const string XPathTorrentDetailsLeechersDiv = "//*[@id='torinfo']/h6[1]/div/div[2]";
         private const string XPathTorrentUploadedOnText = "//*[@id='torinfo']/h6[1]/text()[2]";
         private const string XPathTorrentSizeText = "//*[@id='torinfo']/h6[1]/text()[1]";
+        private const string XPathPaginationListItems = @"//ul[contains(@class, 'pagination')]/li";
 
         private static readonly Regex RegexUploadedOn = new Regex(@"^(\w{3})\s{1}(\d{1,}),\s{1}(\d{1,5})");
 
@@ -61,7 +61,7 @@ namespace Sweater.Core.Indexers.Public.Zooqle
         }
 
         public override string Tag => ConfigName;
-        
+
         public override Task Login() => Task.FromResult(0);
 
         public override Task Logout() => Task.FromResult(0);
@@ -74,23 +74,55 @@ namespace Sweater.Core.Indexers.Public.Zooqle
                 , 0
             );
 
+            var queryResults = (await ParsePage(rootNode)).ToList();
+
+            var pageRange = GetPageRange(rootNode, _settings.MaxPages).ToList();
+
+            var pageParseTasks = pageRange.Select(async page =>
+            {
+                var pageNode = await GetHtmlDocument(
+                    _settings.BaseUrl
+                    , query.QueryString
+                    , page
+                );
+
+                return await ParsePage(pageNode);
+            });
+
+            queryResults.AddRange((await Task.WhenAll(pageParseTasks)).SelectMany(i => i));
+
+            return queryResults;
+        }
+
+        private async Task<IEnumerable<Torrent>> ParsePage(HtmlNode rootNode)
+        {
             var nodeTorrentTable = rootNode.SelectNodes(XPathTorrentTableRowItems);
-            
+
             var torrentParseTasks = nodeTorrentTable
                 .Select(async node => await TryParseTorrentDetailsForRow(node));
 
-            var results = (await Task.WhenAll(torrentParseTasks))
-                .OfType<Torrent>();
-
-            return results;
+            return await Task.WhenAll(torrentParseTasks);
         }
 
-        //TODO: Add paging to request...
+        private static IEnumerable<int> GetPageRange(HtmlNode rootNode, int maxPages)
+        {
+            var lastPageNumber = rootNode
+                                     .SelectNodes(XPathPaginationListItems)
+                                     ?.Select(n => n.InnerText)
+                                     .Where(t => Regex.IsMatch(t, @"\d$"))
+                                     .Where(r => !string.IsNullOrWhiteSpace(r))
+                                     .Select(int.Parse)
+                                     .Last()
+                                 ?? 0;
+
+            return PagingUtil.GetPageRange(lastPageNumber, maxPages);
+        }
+
         private async Task<HtmlNode> GetHtmlDocument(
             string baseUrl
             , string queryString
             , int page
-        ) => (await HttpClient.GetStringAsync($"{baseUrl}/search?q={queryString}&s=ns&v=t&sd=d"))
+        ) => (await HttpClient.GetStringAsync($"{baseUrl}/search?q={queryString}&s=ns&v=t&sd=d&pg={page}"))
             ?.ToHtmlDocument()
             .DocumentNode;
 
@@ -110,11 +142,11 @@ namespace Sweater.Core.Indexers.Public.Zooqle
             catch (Exception exception)
             {
                 _logger.LogError("Failed to parse row", exception);
-                
+
                 return null;
             }
         }
-        
+
 
         private static Torrent ParseTorrentDetailsHtmlDocumentNode(
             HtmlNode torrentDetailsDocumentNode
@@ -210,6 +242,5 @@ namespace Sweater.Core.Indexers.Public.Zooqle
         ) => torrentRowNode
             .SelectSingleNode("td[2]/a")
             ?.GetAttributeValue("href", string.Empty);
-        
     }
 }

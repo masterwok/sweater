@@ -29,8 +29,8 @@ namespace Sweater.Core.Utils
                 : 2;
 
             return remainingPageCount <= 0
-                ? null
-                : Enumerable
+                ? new List<int>()
+                :  Enumerable
                     .Range(rangeStart, remainingPageCount)
                     .ToList();
         }
