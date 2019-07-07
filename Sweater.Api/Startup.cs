@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,11 +14,9 @@ using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
-using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
-using Sweater.Core.Indexers.Public.Zoogle;
 using Sweater.Core.Indexers.Public.Zooqle;
 using Sweater.Core.Models;
 using Sweater.Core.Services.Contracts;
@@ -71,7 +68,6 @@ namespace Sweater.Api
             services.AddTransient<ThePirateBay>();
             services.AddTransient<LeetX>();
             services.AddTransient<Rarbg>();
-            services.AddTransient<Kat>();
             services.AddTransient<Zooqle>();
 
             // Indexer Configurations
@@ -86,14 +82,10 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(ThePirateBay.ConfigName)
                 .Get<Core.Indexers.Public.ThePirateBay.Models.Settings>());
-            
-            services.AddTransient(serviceProvider => _indexerConfigSection
-                .GetSection(Kat.ConfigName)
-                .Get<Core.Indexers.Public.Kat.Models.Settings>());
-            
+
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(Zooqle.ConfigName)
-                .Get<Core.Indexers.Public.Zoogle.Models.Settings>());
+                .Get<Core.Indexers.Public.Zooqle.Models.Settings>());
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>

@@ -33,7 +33,6 @@ namespace Sweater.Api.Services
             _queryService = new IndexerQueryService(
                 logger
                 , getIndexer
-                , queryConfig
             );
 
             _queryConfig = queryConfig;
