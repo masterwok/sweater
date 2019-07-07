@@ -18,17 +18,14 @@ namespace Sweater.Core.Services
     {
         private readonly ILogService<IndexerQueryService> _logger;
         private readonly Func<Indexer, IIndexer> _getIndexer;
-        private readonly QueryConfig _queryConfig;
 
         public IndexerQueryService(
             ILogService<IndexerQueryService> logger
             , Func<Indexer, IIndexer> getIndexer
-            , QueryConfig queryConfig
         )
         {
             _logger = logger;
             _getIndexer = getIndexer;
-            _queryConfig = queryConfig;
         }
 
         public Task<IList<string>> GetIndexerTags() => Task.FromResult(

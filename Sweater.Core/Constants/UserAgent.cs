@@ -1,7 +1,7 @@
 namespace Sweater.Core.Constants
 {
     /// <summary>
-    /// A collection of user-agent strings shared by indexers.;w
+    /// A collection of user-agent strings shared by indexers.
     /// </summary>
     public static class UserAgent
     {
