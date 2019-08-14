@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -23,6 +25,8 @@ namespace Sweater.Core.Indexers.Public.Nyaa
         private const string XPathSize = "td[4]";
         private const string XPathUploadedOn = "td[5]";
         private const string UploadedOnDateFormat = "yyyy-MM-dd HH:mm";
+        private const string XPathNextPageChevron = @"//ul[contains(@class, 'pagination')]/li";
+        private const string XPathPageInfo = @"//div[contains(@class, 'pagination-page-info')]";
 
         public static readonly string ConfigName = Indexer.Nyaa.ToString();
 
@@ -51,32 +55,68 @@ namespace Sweater.Core.Indexers.Public.Nyaa
         {
             var torrents = new List<Torrent>();
 
-            // Synchronously parse each page because last page index is unknown.
-            var firstPageIndex = query.PageIndex + 1;
-            var lastPageIndex = firstPageIndex + (_settings.MaxPages - 1);
+            // Fetch the initial page of results.
+            var initialPageIndex = await GetHtmlDocument(
+                _settings.BaseUrl
+                , query.QueryString
+                , query.PageIndex + 1
+            );
 
-            for (var currentPageIndex = firstPageIndex; currentPageIndex <= lastPageIndex; currentPageIndex++)
+            // Parse and add the initial torrent results.
+            torrents.AddRange(ParseTorrents(initialPageIndex));
+
+            // Get the remaining page range to parse.
+            var pageRange = PagingUtil.GetPageRange(
+                ParseLastPageIndex(initialPageIndex)
+                , _settings.MaxPages
+            );
+
+            // Nothing to parse return initial page results.
+            if (pageRange == null)
             {
-                var queryResultNode = await GetHtmlDocument(
-                    _settings.BaseUrl
-                    , query.QueryString
-                    , currentPageIndex
-                );
-
-                torrents.AddRange(ParseTorrents(queryResultNode));
-
-                if (!HasNextPage(queryResultNode))
-                {
-                    break;
-                }
+                return torrents;
             }
+
+            // Fetch and parse all remaining pages concurrently.
+            torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
+                {
+                    var response = await GetHtmlDocument(
+                        _settings.BaseUrl
+                        , query.QueryString
+                        , page
+                    );
+
+                    return ParseTorrents(response);
+                })
+            )).SelectMany(i => i));
 
             return torrents;
         }
 
-        private const string XPathNextPageChevron = @"//ul[contains(@class, 'pagination')]/li";
+        private static readonly Regex RegexPaginationNumbers = new Regex(@"(\d+)");
 
-        private bool HasNextPage(HtmlNode initialPageNode)
+        private static int ParseLastPageIndex(HtmlNode initialPageNode)
+        {
+            try
+            {
+                var pageInfoNode = initialPageNode.SelectSingleNode(XPathPageInfo);
+                var paginationText = pageInfoNode
+                    ?.InnerText
+                    ?.Split('\n')[0];
+
+                var matches = RegexPaginationNumbers.Matches(paginationText);
+                var pageSize = matches[1].Value.TryToInt();
+                var resultCount = matches[2].Value.TryToInt();
+
+                return (resultCount + pageSize - 1) / pageSize;
+            }
+            catch (Exception)
+            {
+                return 1;
+            }
+        }
+
+        private static bool HasNextPage(HtmlNode initialPageNode)
         {
             var chevronNode = initialPageNode
                 .SelectNodes(XPathNextPageChevron)
