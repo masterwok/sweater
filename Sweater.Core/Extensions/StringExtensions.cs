@@ -1,8 +1,13 @@
+using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
 namespace Sweater.Core.Extensions
 {
+    /// <summary>
+    /// This class provides extension methods for strings.
+    /// </summary>
     public static class StringExtensions
     {
         /// <summary>
@@ -29,5 +34,44 @@ namespace Sweater.Core.Extensions
             return match.Success ? match.Groups[1].Value : null;
         }
 
+        /// <summary>
+        /// Attempt to convert the value of the string to an integer.
+        /// </summary>
+        /// <param name="value">The string value to attempt to convert.</param>
+        /// <param name="def">The default value should the conversion fail.</param>
+        /// <returns>If successful, the converted string value as an integer. Else the default value.</returns>
+        public static int TryToInt(
+            this string value
+            , int def = 0
+        ) => int.TryParse(value, out var result)
+            ? result
+            : def;
+
+        /// <summary>
+        /// Attempt to parse the string value to an exact DateTime format.
+        /// </summary>
+        /// <param name="value">The string value to convert.</param>
+        /// <param name="format">The format string.</param>
+        /// <param name="cultureInfo">The culture to use when converting parsing the date.</param>
+        /// <returns></returns>
+        public static DateTime? TryParseExact(
+            this string value
+            , string format
+            , CultureInfo cultureInfo = null
+        )
+        {
+            try
+            {
+                return DateTime.ParseExact(
+                    value
+                    , format
+                    , cultureInfo ?? CultureInfo.InvariantCulture
+                );
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }

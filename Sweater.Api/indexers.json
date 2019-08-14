@@ -19,6 +19,10 @@
     "zooqle": {
       "baseUrl": "https://zooqle.com",
       "maxPages": "1"
+    },
+    "nyaa": {
+      "baseUrl": "https://nyaa.si",
+      "maxPages": "1"
     }
   }
 }

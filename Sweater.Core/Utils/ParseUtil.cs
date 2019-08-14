@@ -122,6 +122,7 @@ namespace Sweater.Core.Utils
 
         public static long GetBytes(string str)
         {
+            if (str == null) return 0;
             var valStr = new string(str.Where(c => char.IsDigit(c) || c == '.').ToArray());
             var unit = new string(str.Where(char.IsLetter).ToArray());
             var val = CoerceFloat(valStr);
