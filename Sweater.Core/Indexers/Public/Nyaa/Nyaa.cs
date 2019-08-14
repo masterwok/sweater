@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -15,8 +13,17 @@ using Sweater.Core.Utils;
 
 namespace Sweater.Core.Indexers.Public.Nyaa
 {
-    public class Nyaa : BaseIndexer
+    public sealed class Nyaa : BaseIndexer
     {
+        private const string XPathTorrentRow = @"//table[contains(@class, 'torrent-list')]/tbody/tr";
+        private const string XPathTorrentName = "td[2]/a[2]";
+        private const string XPathMagnetUri = "td[3]/a[2]";
+        private const string XPathSeeders = "td[6]";
+        private const string XPathLeechers = "td[7]";
+        private const string XPathSize = "td[4]";
+        private const string XPathUploadedOn = "td[5]";
+        private const string UploadedOnDateFormat = "yyyy-MM-dd HH:mm";
+
         public static readonly string ConfigName = Indexer.Nyaa.ToString();
 
         private readonly IHttpClient _httpClient;
@@ -42,23 +49,42 @@ namespace Sweater.Core.Indexers.Public.Nyaa
 
         public override async Task<IEnumerable<Torrent>> Query(Query query)
         {
-            var initialHtmlDocument = await GetHtmlDocument(
-                _settings.BaseUrl
-                , query.QueryString
-                , 0
-            );
+            var torrents = new List<Torrent>();
 
-            return ParseTorrents(initialHtmlDocument);
+            // Synchronously parse each page because last page index is unknown.
+            var firstPageIndex = query.PageIndex + 1;
+            var lastPageIndex = firstPageIndex + (_settings.MaxPages - 1);
+
+            for (var currentPageIndex = firstPageIndex; currentPageIndex <= lastPageIndex; currentPageIndex++)
+            {
+                var queryResultNode = await GetHtmlDocument(
+                    _settings.BaseUrl
+                    , query.QueryString
+                    , currentPageIndex
+                );
+
+                torrents.AddRange(ParseTorrents(queryResultNode));
+
+                if (!HasNextPage(queryResultNode))
+                {
+                    break;
+                }
+            }
+
+            return torrents;
         }
 
-        private const string XPathTorrentRow = @"//table[contains(@class, 'torrent-list')]/tbody/tr";
-        private const string XPathTorrentName = "td[2]/a[2]";
-        private const string XPathMagnetUri = "td[3]/a[2]";
-        private const string XPathSeeders = "td[6]";
-        private const string XPathLeechers = "td[7]";
-        private const string XPathSize = "td[4]";
-        private const string XPathUploadedOn = "td[5]";
-        private const string UploadedOnDateFormat = "yyyy-MM-dd HH:mm";
+        private const string XPathNextPageChevron = @"//ul[contains(@class, 'pagination')]/li";
+
+        private bool HasNextPage(HtmlNode initialPageNode)
+        {
+            var chevronNode = initialPageNode
+                .SelectNodes(XPathNextPageChevron)
+                ?.LastOrDefault();
+
+            return chevronNode != null
+                   && !chevronNode.HasClass("disabled");
+        }
 
         private IEnumerable<Torrent> ParseTorrents(HtmlNode pageNode)
         {
