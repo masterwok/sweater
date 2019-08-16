@@ -18,20 +18,20 @@ namespace Sweater.Core.Indexers.Public.Nyaa
     public sealed class Nyaa : BaseIndexer
     {
         private const string XPathTorrentRow = @"//table[contains(@class, 'torrent-list')]/tbody/tr";
-        private const string XPathTorrentName = "td[2]/a[2]";
+        private const string XPathTorrentName = "td[2]/a";
         private const string XPathMagnetUri = "td[3]/a[2]";
         private const string XPathSeeders = "td[6]";
         private const string XPathLeechers = "td[7]";
         private const string XPathSize = "td[4]";
         private const string XPathUploadedOn = "td[5]";
         private const string UploadedOnDateFormat = "yyyy-MM-dd HH:mm";
-        private const string XPathNextPageChevron = @"//ul[contains(@class, 'pagination')]/li";
         private const string XPathPageInfo = @"//div[contains(@class, 'pagination-page-info')]";
 
         public static readonly string ConfigName = Indexer.Nyaa.ToString();
 
-        private readonly IHttpClient _httpClient;
-        private readonly ILogService<Nyaa> _logService;
+        private static readonly Regex RegexPaginationNumbers = new Regex(@"(\d+)");
+
+        private ILogService<Nyaa> _logService;
         private readonly Settings _settings;
 
         public Nyaa(
@@ -40,7 +40,6 @@ namespace Sweater.Core.Indexers.Public.Nyaa
             , Settings settings
         ) : base(httpClient)
         {
-            _httpClient = httpClient;
             _logService = logService;
             _settings = settings;
         }
@@ -93,8 +92,6 @@ namespace Sweater.Core.Indexers.Public.Nyaa
             return torrents;
         }
 
-        private static readonly Regex RegexPaginationNumbers = new Regex(@"(\d+)");
-
         private static int ParseLastPageIndex(HtmlNode initialPageNode)
         {
             try
@@ -116,25 +113,16 @@ namespace Sweater.Core.Indexers.Public.Nyaa
             }
         }
 
-        private static bool HasNextPage(HtmlNode initialPageNode)
-        {
-            var chevronNode = initialPageNode
-                .SelectNodes(XPathNextPageChevron)
-                ?.LastOrDefault();
-
-            return chevronNode != null
-                   && !chevronNode.HasClass("disabled");
-        }
-
-        private IEnumerable<Torrent> ParseTorrents(HtmlNode pageNode)
+        private static IEnumerable<Torrent> ParseTorrents(HtmlNode pageNode)
         {
             var torrentTableRows = pageNode.SelectNodes(XPathTorrentRow);
 
             return torrentTableRows
-                .Select(ParseTorrentFromRowNode);
+                       ?.Select(ParseTorrentFromRowNode)
+                   ?? new Torrent[0];
         }
 
-        private Torrent ParseTorrentFromRowNode(
+        private static Torrent ParseTorrentFromRowNode(
             HtmlNode rowNode
         ) => new Torrent
         {
@@ -153,8 +141,10 @@ namespace Sweater.Core.Indexers.Public.Nyaa
                             ?.GetAttributeValue("href", string.Empty)
                         ?? string.Empty,
             Name = rowNode
-                       .SelectSingleNode(XPathTorrentName)
-                       ?.GetAttributeValue("title", string.Empty)
+                       .SelectNodes(XPathTorrentName)
+                       ?.LastOrDefault()
+                       ?.InnerText
+                       ?.Trim()
                    ?? string.Empty,
             Size = ParseUtil.GetBytes(rowNode
                 .SelectSingleNode(XPathSize)
