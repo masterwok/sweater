@@ -18,8 +18,6 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
     {
         public static readonly string ConfigName = Indexer.LimeTorrents.ToString();
 
-//        private static readonly Regex RegexPaginationNumbers = new Regex(@"(\d+)");
-
         private ILogService<LimeTorrents> _logService;
         private readonly Settings _settings;
 
@@ -178,7 +176,7 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
             );
 
             return dayRegex.Success
-                ? today.AddYears(-dayRegex.Groups[1].Value.TryToInt())
+                ? today.AddDays(-dayRegex.Groups[1].Value.TryToInt())
                 : today;
         }
 
