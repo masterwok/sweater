@@ -149,7 +149,7 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
 
             var monthsRegex = Regex.Match(
                 prefix
-                , @"(\d).*month"
+                , @"(\d+).*month"
                 , RegexOptions.IgnoreCase
             );
 
@@ -160,7 +160,7 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
 
             var yearRegex = Regex.Match(
                 prefix
-                , @"(\d).*year"
+                , @"(\d+).*year"
                 , RegexOptions.IgnoreCase
             );
 
@@ -171,7 +171,7 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
 
             var dayRegex = Regex.Match(
                 prefix
-                , @"(\d).*day"
+                , @"(\d+).*day"
                 , RegexOptions.IgnoreCase
             );
 
