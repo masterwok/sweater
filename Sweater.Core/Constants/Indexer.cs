@@ -1,5 +1,6 @@
 using Sweater.Core.Attributes;
 using Sweater.Core.Indexers.Public.LeetX;
+using Sweater.Core.Indexers.Public.LimeTorrents;
 using Sweater.Core.Indexers.Public.Nyaa;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
@@ -16,6 +17,7 @@ namespace Sweater.Core.Constants
         [Type(typeof(LeetX))] LeetX,
         [Type(typeof(Rarbg))] Rarbg,
         [Type(typeof(Zooqle))] Zooqle,
-        [Type(typeof(Nyaa))] Nyaa
+        [Type(typeof(Nyaa))] Nyaa,
+        [Type(typeof(LimeTorrents))] LimeTorrents,
     }
 }

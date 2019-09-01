@@ -55,18 +55,18 @@ namespace Sweater.Core.Indexers.Public.Nyaa
             var torrents = new List<Torrent>();
 
             // Fetch the initial page of results.
-            var initialPageIndex = await GetHtmlDocument(
+            var documentIntiailPage = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
                 , query.PageIndex + 1
             );
 
             // Parse and add the initial torrent results.
-            torrents.AddRange(ParseTorrents(initialPageIndex));
+            torrents.AddRange(ParseTorrents(documentIntiailPage));
 
             // Get the remaining page range to parse.
             var pageRange = PagingUtil.GetPageRange(
-                ParseLastPageIndex(initialPageIndex)
+                ParseLastPageIndex(documentIntiailPage)
                 , _settings.MaxPages
             );
 

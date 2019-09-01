@@ -15,6 +15,7 @@ using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
 using Sweater.Core.Indexers.Public.LeetX;
+using Sweater.Core.Indexers.Public.LimeTorrents;
 using Sweater.Core.Indexers.Public.Nyaa;
 using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
@@ -71,6 +72,7 @@ namespace Sweater.Api
             services.AddTransient<Rarbg>();
             services.AddTransient<Zooqle>();
             services.AddTransient<Nyaa>();
+            services.AddTransient<LimeTorrents>();
 
             // Indexer Configurations
             services.AddTransient(serviceProvider => _indexerConfigSection
@@ -88,10 +90,14 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(Zooqle.ConfigName)
                 .Get<Core.Indexers.Public.Zooqle.Models.Settings>());
-            
+
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(Nyaa.ConfigName)
                 .Get<Core.Indexers.Public.Nyaa.Models.Settings>());
+
+            services.AddTransient(serviceProvider => _indexerConfigSection
+                .GetSection(LimeTorrents.ConfigName)
+                .Get<Core.Indexers.Public.LimeTorrents.Models.Settings>());
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>

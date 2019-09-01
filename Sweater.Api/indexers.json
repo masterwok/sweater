@@ -23,6 +23,10 @@
     "nyaa": {
       "baseUrl": "https://nyaa.si",
       "maxPages": "1"
+    },
+    "limetorrents": {
+      "baseUrl": "https://www.limetorrents.info",
+      "maxPages": "1"
     }
   }
 }
