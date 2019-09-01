@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -91,7 +92,11 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
                                     .SelectSingleNode("td[3]")
                                     ?.InnerText
                             ),
-                            UploadedOn = DateTime.Now
+                            UploadedOn = ParseUploadedOn(
+                                torrentRow
+                                    .SelectSingleNode("td[2]")
+                                    ?.InnerText
+                            )
                         };
                     }
                     catch (Exception ex)
@@ -104,6 +109,63 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
                 .ToList();
 
             return await Task.WhenAll(torrents);
+        }
+
+        private static DateTime? ParseUploadedOn(string dateText)
+        {
+            if (string.IsNullOrWhiteSpace(dateText))
+            {
+                return null;
+            }
+
+            var prefix = dateText
+                .Split('-')
+                .FirstOrDefault()
+                ?.Replace("+", null)
+                .Trim();
+
+            if (string.IsNullOrEmpty(prefix))
+            {
+                return null;
+            }
+
+            var today = DateTime.Today;
+
+            var monthsRegex = Regex.Match(
+                prefix
+                , @"(\d).*month"
+                , RegexOptions.IgnoreCase
+            );
+
+            if (monthsRegex.Success)
+            {
+                return today.AddMonths(-monthsRegex.Groups[1].Value.TryToInt());
+            }
+
+            var yearRegex = Regex.Match(
+                prefix
+                , @"(\d).*year"
+                , RegexOptions.IgnoreCase
+            );
+
+            if (yearRegex.Success)
+            {
+                return today.AddYears(-yearRegex.Groups[1].Value.TryToInt());
+            }
+
+            var dayRegex = Regex.Match(
+                prefix
+                , @"(\d).*day"
+                , RegexOptions.IgnoreCase
+            );
+
+            if (dayRegex.Success)
+            {
+                return today.AddYears(-dayRegex.Groups[1].Value.TryToInt());
+            }
+
+
+            return today;
         }
 
         private async Task<string> GetMagnetUri(string baseUrl, string detailsUrl)
