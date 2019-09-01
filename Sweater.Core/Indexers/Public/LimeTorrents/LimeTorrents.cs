@@ -53,6 +53,25 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
 
             torrents.AddRange(await ParseTorrents(initialQueryResultsNode));
 
+            // Nothing to parse return initial page results.
+            if (pageRange == null)
+            {
+                return torrents;
+            }
+
+            // Fetch and parse all remaining pages concurrently.
+            torrents.AddRange((await Task.WhenAll(pageRange.Select(async page =>
+                {
+                    var response = await FetchQueryResults(
+                        _settings.BaseUrl
+                        , query.QueryString
+                        , page
+                    );
+
+                    return ParseTorrents(response);
+                })
+            )).SelectMany(i => i?.Result));
+
             return torrents;
         }
 
@@ -105,8 +124,7 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
 
                         return null;
                     }
-                })
-                .ToList();
+                });
 
             return await Task.WhenAll(torrents);
         }
