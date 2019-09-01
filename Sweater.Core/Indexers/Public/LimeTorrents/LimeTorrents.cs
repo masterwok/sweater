@@ -177,13 +177,9 @@ namespace Sweater.Core.Indexers.Public.LimeTorrents
                 , RegexOptions.IgnoreCase
             );
 
-            if (dayRegex.Success)
-            {
-                return today.AddYears(-dayRegex.Groups[1].Value.TryToInt());
-            }
-
-
-            return today;
+            return dayRegex.Success
+                ? today.AddYears(-dayRegex.Groups[1].Value.TryToInt())
+                : today;
         }
 
         private async Task<string> GetMagnetUri(string baseUrl, string detailsUrl)
