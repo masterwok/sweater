@@ -221,22 +221,6 @@ namespace Sweater.Core.Indexers.Public.Zooqle
             return result;
         }
 
-        private static string ParseMagnetUri(
-            HtmlNode torrentDetailsDocumentNode
-        )
-        {
-            var result = torrentDetailsDocumentNode
-                .SelectSingleNode(XPathTorrentDetailsMagnetHref)
-                ?.GetAttributeValue("href", null);
-
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                var x = 1;
-            }
-
-            return result;
-        }
-
         private static string ParseTorrentName(HtmlNode torrentDetailsDocumentNode)
         {
             var nodeTorrentName = torrentDetailsDocumentNode.SelectSingleNode(
