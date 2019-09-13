@@ -23,6 +23,7 @@ namespace Sweater.Core.Indexers.Public.Zooqle
 
         private const string XPathTorrentTableRowItems = @"//table[contains(@class, 'table-torrents')]/tr";
         private const string XPathTorrentDetailsTorrentName = @"//h4[contains(@id, 'torname')]";
+
         private const string XPathTorrentDetailsMagnetHref = "//*[@id='dlPanel']/div[2]/ul/li[2]/a";
         private const string XPathTorrentDetailsSeedersDiv = "//*[@id='torinfo']/h6[1]/div/div[1]";
         private const string XPathTorrentDetailsLeechersDiv = "//*[@id='torinfo']/h6[1]/div/div[2]";
@@ -135,9 +136,20 @@ namespace Sweater.Core.Indexers.Public.Zooqle
 
                 var torrentDetailsHtmlDocumentNode = await GetTorrentDetailsPageHtmlDocument(urlDetails);
 
-                return torrentDetailsHtmlDocumentNode == null
-                    ? null
-                    : ParseTorrentDetailsHtmlDocumentNode(torrentDetailsHtmlDocumentNode);
+                if (torrentDetailsHtmlDocumentNode == null)
+                {
+                    return null;
+                }
+
+                var torrent = ParseTorrentDetailsHtmlDocumentNode(torrentDetailsHtmlDocumentNode);
+
+                torrent.MagnetUri = torrentRowNode
+                    ?.SelectNodes(".//a")
+                    ?.Where(n => n.GetAttributeValue("title", null)?.Equals("Magnet link") == true)
+                    .FirstOrDefault()
+                    ?.GetAttributeValue("href", null);
+
+                return torrent;
             }
             catch (Exception exception)
             {
@@ -153,7 +165,6 @@ namespace Sweater.Core.Indexers.Public.Zooqle
         ) => new Torrent
         {
             Leechers = ParseNumberFromHtmlNode(torrentDetailsDocumentNode, XPathTorrentDetailsLeechersDiv),
-            MagnetUri = ParseMagnetUri(torrentDetailsDocumentNode),
             Name = ParseTorrentName(torrentDetailsDocumentNode),
             Seeders = ParseNumberFromHtmlNode(torrentDetailsDocumentNode, XPathTorrentDetailsSeedersDiv),
             Size = ParseSize(torrentDetailsDocumentNode),
@@ -212,9 +223,19 @@ namespace Sweater.Core.Indexers.Public.Zooqle
 
         private static string ParseMagnetUri(
             HtmlNode torrentDetailsDocumentNode
-        ) => torrentDetailsDocumentNode
-            .SelectSingleNode(XPathTorrentDetailsMagnetHref)
-            ?.GetAttributeValue("href", null);
+        )
+        {
+            var result = torrentDetailsDocumentNode
+                .SelectSingleNode(XPathTorrentDetailsMagnetHref)
+                ?.GetAttributeValue("href", null);
+
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                var x = 1;
+            }
+
+            return result;
+        }
 
         private static string ParseTorrentName(HtmlNode torrentDetailsDocumentNode)
         {
