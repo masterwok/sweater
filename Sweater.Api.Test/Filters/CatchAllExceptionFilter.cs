@@ -21,7 +21,7 @@ namespace Sweater.Api.Test.Filters
         private ExceptionContext _exceptionContext;
 
         [SetUp]
-        public void Setup()
+        public void Setup(RouteData)
         {
             _logger = new Mock<ILogger<Api.Filters.CatchAllExceptionFilter>>();
             _filter = new Api.Filters.CatchAllExceptionFilter(_logger.Object);

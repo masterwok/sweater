@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Sweater.Api.Filters;
 using Sweater.Api.Services;
 using Sweater.Core.Attributes;
@@ -14,6 +15,7 @@ using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Contracts;
+using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.LimeTorrents;
 using Sweater.Core.Indexers.Public.Nyaa;
@@ -47,13 +49,14 @@ namespace Sweater.Api
                 // CORS must be enabled before MVC
                 .AddCors()
                 .AddMemoryCache()
-                .AddMvc(options =>
-                {
-                    // Controller filter attribute
-                    options.Filters.Add<CatchAllExceptionFilter>();
-                    options.Filters.Add<ValidModelStateFilter>();
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .AddControllers();
+//                .AddMvc(options =>
+//                {
+//                    // Controller filter attribute
+//                    options.Filters.Add<CatchAllExceptionFilter>();
+//                    options.Filters.Add<ValidModelStateFilter>();
+//                })
+
 
             // Filters
             services.AddScoped<CatchAllExceptionFilter>();
@@ -73,6 +76,7 @@ namespace Sweater.Api
             services.AddTransient<Zooqle>();
             services.AddTransient<Nyaa>();
             services.AddTransient<LimeTorrents>();
+            services.AddTransient<Kat>();
 
             // Indexer Configurations
             services.AddTransient(serviceProvider => _indexerConfigSection
@@ -98,6 +102,10 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(LimeTorrents.ConfigName)
                 .Get<Core.Indexers.Public.LimeTorrents.Models.Settings>());
+            
+            services.AddTransient(serviceProvider => _indexerConfigSection
+                .GetSection(Kat.ConfigName)
+                .Get<Core.Indexers.Public.Kat.Models.Settings>());
 
             // Indexer factory
             services.AddTransient<Func<Indexer, IIndexer>>(serviceProvider => indexer =>
@@ -116,7 +124,7 @@ namespace Sweater.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -128,8 +136,11 @@ namespace Sweater.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.UseCors(options => options.AllowAnyOrigin());
-            app.UseMvc();
+
         }
     }
 }

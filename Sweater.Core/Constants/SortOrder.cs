@@ -8,11 +8,11 @@ namespace Sweater.Core.Constants
         /// <summary>
         /// Ascending order.
         /// </summary>
-        Ascending = 0,
+        Ascending = 1,
         
         /// <summary>
         /// Descending order.
         /// </summary>
-        Descending = 1
+        Descending = 2
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -15,6 +14,8 @@ namespace Sweater.Core.Indexers.Public.Kat
     {
         public static readonly string ConfigName = Indexer.Kat.ToString();
 
+        private const string XPathTorrentRow = @"//table[contains(@class, 'torrents_table')]/tbody/tr";
+
         private ILogService<Kat> _logService;
         private readonly Settings _settings;
 
@@ -26,6 +27,8 @@ namespace Sweater.Core.Indexers.Public.Kat
         {
             _logService = logService;
             _settings = settings;
+
+            HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
         public override string Tag => ConfigName;
@@ -49,8 +52,7 @@ namespace Sweater.Core.Indexers.Public.Kat
 
         private IEnumerable<Torrent> ParseTorrents(HtmlNode rootNode)
         {
-//            torrents_table 
-            var torrentRows = rootNode.SelectNodes(@"//table[contains(@class, 'torrents_table']/tr");
+            var torrentRows = rootNode.SelectNodes(XPathTorrentRow);
 
             return new Torrent[0];
         }

@@ -14,12 +14,12 @@ namespace Sweater.Core.Constants
     /// </summary>
     public enum Indexer
     {
-        [Type(typeof(ThePirateBay))] ThePirateBay,
-        [Type(typeof(LeetX))] LeetX,
-        [Type(typeof(Rarbg))] Rarbg,
-        [Type(typeof(Zooqle))] Zooqle,
-        [Type(typeof(Nyaa))] Nyaa,
-        [Type(typeof(LimeTorrents))] LimeTorrents,
-        [Type(typeof(Kat))] Kat,
+        [Type(typeof(ThePirateBay))] ThePirateBay = 1,
+        [Type(typeof(LeetX))] LeetX = 2,
+        [Type(typeof(Rarbg))] Rarbg = 3,
+        [Type(typeof(Zooqle))] Zooqle = 4,
+        [Type(typeof(Nyaa))] Nyaa = 5,
+        [Type(typeof(LimeTorrents))] LimeTorrents = 6,
+        [Type(typeof(Kat))] Kat = 7
     }
 }
