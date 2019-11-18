@@ -1,4 +1,5 @@
 using Sweater.Core.Attributes;
+using Sweater.Core.Indexers.Public.Kat;
 using Sweater.Core.Indexers.Public.LeetX;
 using Sweater.Core.Indexers.Public.LimeTorrents;
 using Sweater.Core.Indexers.Public.Nyaa;
@@ -19,5 +20,6 @@ namespace Sweater.Core.Constants
         [Type(typeof(Zooqle))] Zooqle,
         [Type(typeof(Nyaa))] Nyaa,
         [Type(typeof(LimeTorrents))] LimeTorrents,
+        [Type(typeof(Kat))] Kat,
     }
 }
