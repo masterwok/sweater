@@ -130,10 +130,11 @@ namespace Sweater.Api
             }
 
             app.UseHttpsRedirection();
-            app.UseCors(options => options.AllowAnyOrigin());
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseCors(options => options.AllowAnyOrigin());
+
         }
     }
 }

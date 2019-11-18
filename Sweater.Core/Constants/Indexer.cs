@@ -18,6 +18,6 @@ namespace Sweater.Core.Constants
         [Type(typeof(Rarbg))] Rarbg,
         [Type(typeof(Zooqle))] Zooqle,
         [Type(typeof(Nyaa))] Nyaa,
-        [Type(typeof(LimeTorrents))] LimeTorrents,
+        [Type(typeof(LimeTorrents))] LimeTorrents
     }
 }
