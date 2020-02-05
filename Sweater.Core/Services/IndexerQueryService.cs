@@ -33,7 +33,7 @@ namespace Sweater.Core.Services
         );
 
         private IEnumerable<IIndexer> GetIndexersForQuery(
-            IEnumerable<Indexer> requestedIndexers
+            ICollection<Indexer> requestedIndexers
         )
         {
             var indexerValues = Enum
