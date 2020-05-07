@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
                 Name = n.Name,
                 Seeders = (int) n.Seeders,
                 Size = n.Size,
-                UploadedOn = ParseUtil.ParseDateTimeFromUnixEpochTimeStamp(n.Added)
+                UploadedOn = DateTimeOffset.FromUnixTimeSeconds(n.Added).Date
             });
         }
     }

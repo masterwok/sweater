@@ -167,22 +167,5 @@ namespace Sweater.Core.Utils
 
         public static long BytesFromKB(float kb) => (long) (kb * 1024f);
 
-        public static DateTime ParseDateTimeFromUnixEpochTimeStamp(double unixTimeStamp)
-        {
-            var epochDateTime = new DateTime(
-                1970
-                , 1
-                , 1
-                , 0
-                , 0
-                , 0
-                , 0
-                , DateTimeKind.Utc
-            );
-            
-            epochDateTime = epochDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            
-            return epochDateTime;
-        }
     }
 }
