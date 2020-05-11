@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Sweater.Core.Clients.Contracts;
 using Sweater.Core.Indexers.Contracts;
@@ -38,23 +39,12 @@ namespace Sweater.Core.Indexers
         protected BaseIndexer(IHttpClient httpClient) => HttpClient = httpClient;
 
         /// <summary>
-        /// An asynchronous method for authenticating with the indexer. This is the first method
-        /// invoked in the query workflow.
-        /// </summary>
-        /// <returns>Whether or not the authentication succeeded.</returns>
-        public abstract Task Login();
-
-        /// <summary>
         /// Query the indexer for torrents.
         /// </summary>
         /// <param name="query">The query provided from the client.</param>
+        /// <param name="token">Cancellation token used to cancel the query.</param>
         /// <returns>An enumerable collection of torrent results.</returns>
-        public abstract Task<IEnumerable<Torrent>> Query(Query query);
+        public abstract Task<IEnumerable<Torrent>> Query(Query query, CancellationToken token);
 
-        /// <summary>
-        /// End authenticated session with the indexer. This method is invoked last in the query
-        /// workflow.
-        /// </summary>
-        public abstract Task Logout();
     }
 }

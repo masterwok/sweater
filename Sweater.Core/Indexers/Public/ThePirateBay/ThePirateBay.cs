@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Sweater.Core.Clients.Contracts;
@@ -8,7 +9,6 @@ using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
 using Sweater.Core.Indexers.Public.ThePirateBay.Models;
 using Sweater.Core.Models;
-using Sweater.Core.Utils;
 using Settings = Sweater.Core.Indexers.Public.ThePirateBay.Models.Settings;
 
 namespace Sweater.Core.Indexers.Public.ThePirateBay
@@ -43,15 +43,19 @@ namespace Sweater.Core.Indexers.Public.ThePirateBay
             HttpClient.SetDefaultUserAgent(UserAgent.Chrome);
         }
 
-        public override Task Login() => Task.FromResult(true);
-
-        public override Task Logout() => Task.FromResult(true);
-
-        public override async Task<IEnumerable<Torrent>> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(
+            Query query
+            , CancellationToken cancellationToken
+        )
         {
-            var responseString = await HttpClient.GetStringAsync(
+            var response = await HttpClient.GetAsync(
                 $"{_settings.BaseUrl}/q.php?q={query.QueryString}&cat=0"
+                , cancellationToken
             );
+
+            var responseString = await response
+                .Content
+                .ReadAsStringAsync();
 
             var items = JsonConvert.DeserializeObject<List<QueryResponseItem>>(responseString);
 

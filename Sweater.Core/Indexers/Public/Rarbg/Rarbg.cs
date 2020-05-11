@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
@@ -41,17 +42,13 @@ namespace Sweater.Core.Indexers.Public.Rarbg
 
         public override string Tag => ConfigName;
 
-        public override Task Login() => Task.FromResult(0);
-
-        public override Task Logout() => Task.FromResult(0);
-
-        public override async Task<IEnumerable<Torrent>> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(Query query, CancellationToken token)
         {
             var appId = _settings.AppId;
 
             var tokenResponse = await GetToken(appId);
 
-            await Task.Delay(RequestDelayMs);
+            await Task.Delay(RequestDelayMs, token);
 
             // https://torrentapi.org/pubapi_v2.php?mode=search&search_string=Blade%20Runner&app_id=test&sort=seeders&format=json_extended&limit=100&token=avtns5qpmk
             var requestUri = QueryHelpers.AddQueryString(
@@ -68,21 +65,26 @@ namespace Sweater.Core.Indexers.Public.Rarbg
                 }
             );
 
-            var response = await HttpClient.GetStringAsync(requestUri);
-            var queryResponse = JsonConvert.DeserializeObject<QueryResponse>(response);
+            var response = await HttpClient.GetAsync(requestUri, token);
+
+            var responseString = await response
+                .Content
+                .ReadAsStringAsync();
+
+            var queryResponse = JsonConvert.DeserializeObject<QueryResponse>(responseString);
 
             return queryResponse
-                .TorrentResults
-                ?.Select(r => new Torrent
-                {
-                    Name = r.Title,
-                    MagnetUri = r.Download,
-                    Size = r.Size,
-                    Seeders = r.Seeders,
-                    Leechers = r.Leechers,
-                    UploadedOn = r.Pubdate
-                })
-                ?? new Torrent[0];
+                       .TorrentResults
+                       ?.Select(r => new Torrent
+                       {
+                           Name = r.Title,
+                           MagnetUri = r.Download,
+                           Size = r.Size,
+                           Seeders = r.Seeders,
+                           Leechers = r.Leechers,
+                           UploadedOn = r.Pubdate
+                       })
+                   ?? new Torrent[0];
         }
 
         private async Task<TokenResponse> GetToken(string appId)

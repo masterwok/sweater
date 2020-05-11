@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Sweater.Core.Constants;
 using Sweater.Core.Extensions;
@@ -52,13 +53,25 @@ namespace Sweater.Core.Services
                 .Select(_getIndexer);
         }
 
-        public async Task<IList<TorrentQueryResult>> Query(Query query)
+        public async Task<IList<TorrentQueryResult>> Query(
+            Query query
+            , CancellationToken? token = null
+        )
         {
+            if (token == null)
+            {
+                using var cts = new CancellationTokenSource();
+                token = cts.Token;
+            }
+
             var indexers = GetIndexersForQuery(query.Indexers);
 
-            var indexerResults = await Task.WhenAll(indexers.Select(
-                indexer => QueryIndexer(indexer, query)
-            ));
+            var indexerResults = await Task.WhenAll(
+                indexers.Select(indexer => QueryIndexer(
+                    indexer
+                    , query
+                    , (CancellationToken) token
+                )));
 
             return indexerResults
                 .FlattenIndexerResults()
@@ -68,24 +81,28 @@ namespace Sweater.Core.Services
                 );
         }
 
+
         private async Task<IndexerResult> QueryIndexer(
             IIndexer indexer
             , Query query
+            , CancellationToken token
         )
         {
-            var result = new IndexerResult
-            {
-                Indexer = indexer.Tag
-            };
+            var indexerResult = new IndexerResult {Indexer = indexer.Tag};
 
             try
             {
-                await indexer.Login();
+                var result = await indexer.Query(query, token);
 
-                result.Torrents = (await indexer.Query(query))
-                    ?.Where(t => t != null);
-
-                await indexer.Logout();
+                indexerResult.Torrents = result?.Where(t => t != null)
+                                         ?? new Torrent[0];
+            }
+            catch (TaskCanceledException exception)
+            {
+                _logger.LogError(
+                    $"{indexer} timed out during query."
+                    , exception
+                );
             }
             catch (Exception exception)
             {
@@ -95,7 +112,7 @@ namespace Sweater.Core.Services
                 );
             }
 
-            return result;
+            return indexerResult;
         }
     }
 }

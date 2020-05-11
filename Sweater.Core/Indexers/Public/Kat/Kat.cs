@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -44,9 +45,7 @@ namespace Sweater.Core.Indexers.Public.Kat
 
         public override string Tag => ConfigName;
 
-        public override Task Login() => Task.CompletedTask;
-
-        public override async Task<IEnumerable<Torrent>> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(Query query, CancellationToken token)
         {
             var torrents = new List<Torrent>();
 
@@ -54,6 +53,7 @@ namespace Sweater.Core.Indexers.Public.Kat
                 _settings.BaseUrl
                 , query.QueryString
                 , query.PageIndex + 1
+                , token
             );
 
             torrents.AddRange(ParseTorrents(initialQueryResultsNode));
@@ -72,6 +72,7 @@ namespace Sweater.Core.Indexers.Public.Kat
                             _settings.BaseUrl
                             , query.QueryString
                             , page
+                            , token
                         );
 
                         return ParseTorrents(response);
@@ -128,19 +129,21 @@ namespace Sweater.Core.Indexers.Public.Kat
                    ?? new Torrent[0];
         }
 
-        public override Task Logout() => Task.CompletedTask;
-
         private async Task<HtmlNode> FetchQueryResults(
             string baseUrl
             , string queryString
             , int page
+            , CancellationToken token
         )
         {
-            var response = await HttpClient.GetStringAsync(
+            var response = await HttpClient.GetAsync(
                 $"{baseUrl}/katsearch/page/{page}/{queryString}"
+                , token
             );
 
-            return response
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            return responseString
                 .ToHtmlDocument()
                 .DocumentNode;
         }

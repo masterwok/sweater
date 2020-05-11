@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -30,10 +31,7 @@ namespace Sweater.Api.Services
             , IMemoryCache memoryCache
         )
         {
-            _queryService = new IndexerQueryService(
-                logger
-                , getIndexer
-            );
+            _queryService = new IndexerQueryService(logger, getIndexer);
 
             _queryConfig = queryConfig;
             _memoryCache = memoryCache;
@@ -49,11 +47,14 @@ namespace Sweater.Api.Services
             , indexers.Select(i => i.ToString())
         );
 
-        public async Task<IList<TorrentQueryResult>> Query(Query query)
+        public async Task<IList<TorrentQueryResult>> Query(
+            Query query
+            , CancellationToken? token = null
+        )
         {
             if (!_queryConfig.IsCacheEnabled)
             {
-                return await _queryService.Query(query);
+                return await _queryService.Query(query, token);
             }
 
             var indexersString = GetIndexersString(query.Indexers);
@@ -65,7 +66,7 @@ namespace Sweater.Api.Services
                     TimeSpan.FromMilliseconds(_queryConfig.CacheTimeSpanMs)
                 );
 
-                return (await _queryService.Query(query)).ToList();
+                return (await _queryService.Query(query, token)).ToList();
             });
         }
     }

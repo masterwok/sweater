@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ using Sweater.Core.Indexers.Public.Rarbg;
 using Sweater.Core.Indexers.Public.ThePirateBay;
 using Sweater.Core.Indexers.Public.Zooqle;
 using Sweater.Core.Models;
+using Sweater.Core.Services;
 using Sweater.Core.Services.Contracts;
 
 namespace Sweater.Api
@@ -63,7 +65,15 @@ namespace Sweater.Api
 
             // Services
             services.AddSingleton(typeof(ILogService<>), typeof(LogService<>));
-            services.AddTransient<IIndexerQueryService, CachedIndexerQueryService>();
+
+            // services.AddTransient<IIndexerQueryService, CachedIndexerQueryService>();
+            services.AddTransient<IIndexerQueryService>(provider => new CachedIndexerQueryService(
+                provider.GetService<ILogService<IndexerQueryService>>(),
+                provider.GetService<Func<Indexer, IIndexer>>(),
+                provider.GetService<QueryConfig>(),
+                provider.GetService<IMemoryCache>()
+            ));
+
             services.AddSingleton(_queryConfig);
 
             // Clients
@@ -102,7 +112,7 @@ namespace Sweater.Api
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(LimeTorrents.ConfigName)
                 .Get<Core.Indexers.Public.LimeTorrents.Models.Settings>());
-            
+
             services.AddTransient(serviceProvider => _indexerConfigSection
                 .GetSection(Kat.ConfigName)
                 .Get<Core.Indexers.Public.Kat.Models.Settings>());
@@ -140,7 +150,6 @@ namespace Sweater.Api
             app.UseAuthentication();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.UseCors(options => options.AllowAnyOrigin());
-
         }
     }
 }

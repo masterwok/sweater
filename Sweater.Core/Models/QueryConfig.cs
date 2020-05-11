@@ -16,5 +16,10 @@ namespace Sweater.Core.Models
         /// How long in milliseconds to keep cached results.
         /// </summary>
         public long CacheTimeSpanMs { get; set; }
+        
+        /// <summary>
+        /// The time in milliseconds to wait before cancelling a query.
+        /// </summary>
+        public long QueryTimeoutMs { get; set; }
     }
 }

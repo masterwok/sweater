@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -63,16 +64,13 @@ namespace Sweater.Core.Indexers.Public.Zooqle
 
         public override string Tag => ConfigName;
 
-        public override Task Login() => Task.FromResult(0);
-
-        public override Task Logout() => Task.FromResult(0);
-
-        public override async Task<IEnumerable<Torrent>> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(Query query, CancellationToken token)
         {
             var rootNode = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
                 , 0
+                , token
             );
 
             var queryResults = (await ParsePage(rootNode)).ToList();
@@ -85,6 +83,7 @@ namespace Sweater.Core.Indexers.Public.Zooqle
                     _settings.BaseUrl
                     , query.QueryString
                     , page
+                    , token
                 );
 
                 return await ParsePage(pageNode);
@@ -123,9 +122,22 @@ namespace Sweater.Core.Indexers.Public.Zooqle
             string baseUrl
             , string queryString
             , int page
-        ) => (await HttpClient.GetStringAsync($"{baseUrl}/search?q={queryString}&s=ns&v=t&sd=d&pg={page}"))
-            ?.ToHtmlDocument()
-            .DocumentNode;
+            , CancellationToken token
+        )
+        {
+            var response = await HttpClient.GetAsync(
+                $"{baseUrl}/search?q={queryString}&s=ns&v=t&sd=d&pg={page}"
+                , token
+            );
+
+            var responseString = await response
+                .Content
+                .ReadAsStringAsync();
+
+            return responseString
+                    ?.ToHtmlDocument()
+                !.DocumentNode;
+        }
 
         private async Task<Torrent> TryParseTorrentDetailsForRow(HtmlNode torrentRowNode)
         {

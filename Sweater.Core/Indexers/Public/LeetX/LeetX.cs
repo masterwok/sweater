@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Sweater.Core.Clients.Contracts;
@@ -52,16 +52,13 @@ namespace Sweater.Core.Indexers.Public.LeetX
             , Settings settings
         ) : base(httpClient) => _settings = settings;
 
-        public override Task Login() => Task.FromResult(0);
-
-        public override Task Logout() => Task.FromResult(0);
-
-        public override async Task<IEnumerable<Torrent>> Query(Query query)
+        public override async Task<IEnumerable<Torrent>> Query(Query query, CancellationToken token)
         {
             var rootNode = await GetHtmlDocument(
                 _settings.BaseUrl
                 , query.QueryString
                 , 1
+                , token
             );
 
             var firstPage = await ParseResponse(rootNode);
@@ -87,6 +84,7 @@ namespace Sweater.Core.Indexers.Public.LeetX
                         _settings.BaseUrl
                         , query.QueryString
                         , page
+                        , token
                     );
 
                     return await ParseResponse(response);
@@ -100,13 +98,19 @@ namespace Sweater.Core.Indexers.Public.LeetX
             string baseUrl
             , string queryString
             , int page
+            , CancellationToken token
         )
         {
-            var response = await HttpClient.GetStringAsync(
+            var response = await HttpClient.GetAsync(
                 $"{baseUrl}/search/{queryString}/{page}/"
+                , token
             );
 
-            return response
+            var responseString = await response
+                .Content
+                .ReadAsStringAsync();
+
+            return responseString
                 .ToHtmlDocument()
                 .DocumentNode;
         }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Sweater.Api.Models;
@@ -13,9 +15,16 @@ namespace Sweater.Api.Controllers
     public class IndexerController : ControllerBase
     {
         private readonly IIndexerQueryService _queryService;
+        private readonly long _queryTimeoutMs;
 
-        public IndexerController(IIndexerQueryService queryService)
-            => _queryService = queryService;
+        public IndexerController(
+            IIndexerQueryService queryService
+            , QueryConfig queryConfig
+        )
+        {
+            _queryService = queryService;
+            _queryTimeoutMs = queryConfig.QueryTimeoutMs;
+        }
 
         /// <summary>
         /// Get the tags of all of the implemented indexers.
@@ -36,7 +45,9 @@ namespace Sweater.Api.Controllers
         [Route("[action]")]
         public async Task<PaginatedResponse<TorrentQueryResult>> Query(Query query)
         {
-            var results = await _queryService.Query(query);
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_queryTimeoutMs));
+            
+            var results = await _queryService.Query(query, cts.Token);
             
             var pageIndex = query.PageIndex;
             var pageSize = query.PageSize;
