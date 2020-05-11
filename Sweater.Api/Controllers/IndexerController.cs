@@ -38,8 +38,6 @@ namespace Sweater.Api.Controllers
         /// Query the indexers.
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="pageIndex">The page index to fetch (default: 0).</param>
-        /// <param name="pageSize">The maximum number of items per page (default: 10).</param>
         /// <returns>A TorrentQueryResult instance.</returns>
         [HttpGet]
         [Route("[action]")]
